@@ -6,7 +6,7 @@ cv2.namedWindow('Track')
 cv2.resizeWindow('Track', 500,350)
 
 
-cap= cv2.VideoCapture(1)
+cap= cv2.VideoCapture(0)
 
 #cv2.imshow('original',img)
 

@@ -1,3 +1,7 @@
 {
-    "code-runner.ignoreSelection": true
+    "code-runner.ignoreSelection": true,
+    "files.associations": {
+        "stdio.h": "c",
+        "math.h": "c"
+    }
 }

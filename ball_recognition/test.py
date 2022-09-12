@@ -4,7 +4,7 @@ import numpy as np
 
 np.seterr(over='ignore')
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 prevCircle = None
 dist = lambda x1,y1,x2,y2: (x1-x2)**2+(y1-y2)**2
 #create a window
@@ -71,7 +71,7 @@ while True:
         prevCircle=chosen
         
     cv2.imshow('circle',frame)
-    cv2.imshow('frame',result)
+    #cv2.imshow('frame',result)
     cv2.imshow('Mask',mask_check)
     #cv2.imshow('a',blur_frame)
     
