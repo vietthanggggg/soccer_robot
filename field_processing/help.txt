@@ -1,0 +1,2 @@
+#THE SCRIPT TO RUN THE CODE:
+python .\cv_code.py --image 'D:\BK-DOCS\Luan Van\cv_workspace\field_processing\field_img.jpg'
