@@ -78,7 +78,7 @@ T = threshold_local(warped, 11, offset = 10, method = "gaussian")
 warped = (warped > T).astype("uint8") * 255
 # show the original and scanned images
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 prevCircle = None
 dist = lambda x1,y1,x2,y2: (x1-x2)**2+(y1-y2)**2
 

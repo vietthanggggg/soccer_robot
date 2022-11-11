@@ -244,8 +244,8 @@ def main():
     print(__file__ + " start!!")
     
     # Input point
-    ball_coordinate=[50,20]
-    robot_state=[10,20,30]
+    ball_coordinate = [50,20]
+    robot_state = [10,20,30]
     e_robot_state = [22,22,0]
     middle_goal_x = 90
     middle_goal_y = 0
