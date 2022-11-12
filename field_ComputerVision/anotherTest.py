@@ -2,51 +2,58 @@ import cv2
 import numpy as np
 import cv2.aruco as aruco
 from aruco_lib import *
-#from scan import *
 from transform import four_point_transform
 from transform import order_points
-# from transform import order_points_bl
-# from transform import order_points_ratio
 from skimage.filters import threshold_local
 import argparse
 import imutils
 import time
 import socket
 import threading
+from time import sleep
 
-#CACH 1
-serverAddressPort = ("10.130.216.89",20001)
-bufferSize = 1024
+clientlst =[]
+SeverIP = "10.128.49.126"                     #Computer IP
+SeverPort = 20001                         #Sever port or this computer port
+bufferSize = 1024                         #Maximum buffer size
+msgFromSever = "Hello UDP client"
+bytesToSend1 = str.encode(msgFromSever)
 
-ClientIP = "10.130.216.89"
-ClientPort = 20016
-
-#Create a UDP socket at client side
-UDPClientSocket = socket.socket(family=socket.AF_INET, type = socket.SOCK_DGRAM)
+#Create a datagram socket (UDP)
+UDPSeverSocket = socket.socket(family=socket.AF_INET, type = socket.SOCK_DGRAM)
 
 #Bind to address and ip
-UDPClientSocket.bind((ClientIP, ClientPort))
+UDPSeverSocket.bind((SeverIP, SeverPort))
+print("UDP sever up and listening")
 
-#CACH 2
-# msgFromClient = "Hi Server"
-# bytesToSend = str.encode(msgFromClient)
-#UDPClientSocket.sendto(bytesToSend,serverAddressPort) #Create random port number and get current system IP
-print("UDP client up and listening")
+bytesAddressPair = UDPSeverSocket.recvfrom(bufferSize)  #waiting here until receiving
+message = bytesAddressPair[0].decode('utf-8')
+address = bytesAddressPair[1]
+
+print(address)
+print(message)
+
+#send to that client
+# UDPSeverSocket.sendto(bytesToSend1, address)
 
 def ReceiveThread():
     while True:
-        bytesAddressPair = UDPClientSocket.recvfrom(bufferSize)  #waiting here until receiving
+        bytesAddressPair = UDPSeverSocket.recvfrom(bufferSize)  #waiting here until receiving
         message = bytesAddressPair[0].decode('utf-8')
+        msg = 'robot coordinates : ('+str(robot_state_parameter[0])+','+str(robot_state_parameter[1])+','+str(robot_state_parameter[2])+')\nBall coordinates: ('+str(ball_coordinate[0])+', '+str(ball_coordinate[1])+')'
         address = bytesAddressPair[1]
-
+        bytesToSend = str.encode(msg)
+        UDPSeverSocket.sendto(bytesToSend,address)
+        
         print(address)
         print(message)
 
+        #send to that client
+        #UDPSeverSocket.sendto(bytesToSend, address)
 
-#Listen for incoming datagrams
-thread = threading.Thread(target = ReceiveThread, args = ())
-thread.start()
-
+# #Listen for incoming datagrams
+# thread = threading.Thread(target = ReceiveThread, args = ())
+# thread.start()
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True,
@@ -68,11 +75,8 @@ gray = cv2.GaussianBlur(gray, (5, 5), 0)
 edged = cv2.Canny(gray, 75, 200)
 # show the original image and the edge detected image
 print("STEP 1: Edge Detection")
-cv2.imshow("Image", image)
+#cv2.imshow("Image", image)
 cv2.imshow("Edged", edged)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
 
 # find the contours in the edged image, keeping only the
 # largest ones, and initialize the screen contour
@@ -93,8 +97,6 @@ for c in cnts:
 print("STEP 2: Find contours of paper")
 cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
 cv2.imshow("Outline", image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
 
 # apply the four point transform to obtain a top-down
 # view of the original image
@@ -107,7 +109,7 @@ origin = (tl+bl)/2
 print(origin)
 print(origin[0])
 dis = ((rect[1][1]-rect[0][1])**2+(rect[1][0]-rect[0][0])**2)**0.5
-ratio_ppc = dis/76
+ratio_ppc = dis/91
 # convert the warped image to grayscale, then threshold it
 # to give it that 'black and white' paper effect
 warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
@@ -121,41 +123,34 @@ dist = lambda x1,y1,x2,y2: (x1-x2)**2+(y1-y2)**2
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+# cap.set(cv2.CAP_PROP_FPS, 100)
+# cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'MJPG'))
 
 det_aruco_list = {}
 print("STEP 3: Apply perspective transform")
 
 while True:
-
     ret,n_frame = cap.read()
 
-    # det_aruco_list = detect_Aruco(n_frame)
-    # if(det_aruco_list):
-    #     img1 = mark_Aruco(n_frame,det_aruco_list)
-    #     robot_state = calculate_Robot_State(img1,det_aruco_list)
-
     frame=cv2.flip(n_frame,1)
-    #gray_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-    #blur_frame = cv2.GaussianBlur(gray_frame,(17,17),0)
 
-    
     det_aruco_list = detect_Aruco(frame)
     if(det_aruco_list):
         origin = (tl+bl)/2
-        ratio_ppc = dis/76
+        ratio_ppc = dis/91
         img1 = mark_Aruco(frame,det_aruco_list,origin,ratio_ppc)
         robot_state = calculate_Robot_State(img1,det_aruco_list)
         robot_state_coordinate = mark_Aruco_parameter(frame,det_aruco_list,origin,ratio_ppc)
         robot_state_angle = calculate_Robot_State_angle(img1,det_aruco_list)
-        robot_state_parameter = (robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle)
+        robot_state_parameter = (robot_state_coordinate[0],-robot_state_coordinate[1],robot_state_angle)
         print('robot state parameter:')
         print('x : ',robot_state_parameter[0])
-        print('y : ',robot_state_parameter[1])
+        print('y : ',-robot_state_parameter[1])
         print('angle : ',robot_state_parameter[2])
 
     hsv= cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    lower_orange= np.array([24,84,94])
-    upper_orange= np.array([45,182,252])
+    lower_orange= np.array([23,85,80])
+    upper_orange= np.array([33,255,255])
     mask=cv2.inRange(hsv,lower_orange,upper_orange)
     result=cv2.bitwise_and(frame,frame,mask=mask)
     gray_frame = cv2.cvtColor(result,cv2.COLOR_BGR2GRAY)
@@ -175,7 +170,7 @@ while True:
                    chosen=i
         cv2.circle(frame,(chosen[0],chosen[1]),1,(0,100,100),3) 
         cv2.circle(frame,(chosen[0],chosen[1]),chosen[2],(0,255,0),3)
-        ball_coordinate = (round((chosen[0]-origin[0])/ratio_ppc,2),round(-(chosen[1]-origin[1])/ratio_ppc,2))
+        ball_coordinate = (round((chosen[0]-origin[0])/ratio_ppc,2),round((origin[1]-chosen[1])/ratio_ppc,2))
         text='('+str(ball_coordinate[0])+', '+str(ball_coordinate[1])+')'
         frame = cv2.putText(frame, 
                             text, 
@@ -190,15 +185,15 @@ while True:
         print('x:',ball_coordinate[0])
         print('y:',ball_coordinate[1])
 
-        msg = text
-        bytesToSend = str.encode(msg)
-        UDPClientSocket.sendto(bytesToSend,serverAddressPort)
     cv2.imshow('circle',frame)
     cv2.imshow('blur',blur_frame)
-    cv2.imshow("Original", imutils.resize(orig, height = 650))
+    #cv2.imshow("Original", imutils.resize(orig, height = 650))
     #cv2.imshow("Scanned", imutils.resize(warped, height = 650))
-    cv2.imshow("Scanned", warped)
+    #cv2.imshow("Scanned", warped)
     
+    thread = threading.Thread(target = ReceiveThread, args = ())
+    thread.start()
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

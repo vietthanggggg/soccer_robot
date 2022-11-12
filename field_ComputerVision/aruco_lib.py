@@ -73,7 +73,7 @@ def mark_Aruco(img, aruco_list,origin,ratio_ppc):    #function to mark the centr
         cv2.line(img,(int(centre[0]),int(centre[1])),(int(orient_centre[0]),int(orient_centre[1])),(255,0,0),4) #marking the centre of aruco
         #cv2.line(img,centre,orient_centre,(255,0,0),4)
         cv2.putText(img, 'id:'+str(key), (10,450), font, 1, (255,128,0), 2, cv2.LINE_AA)
-        centre_calibrate = (round((centre[0]-origin[0])/ratio_ppc,2),round((centre[1]-origin[1])/ratio_ppc,2))
+        centre_calibrate = (round((centre[0]-origin[0])/ratio_ppc,2),round((origin[1]-centre[1])/ratio_ppc,2))
         cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
     return img
 
@@ -100,7 +100,7 @@ def mark_Aruco_parameter(img, aruco_list,origin,ratio_ppc):    #function to mark
         #cv2.line(img,centre,orient_centre,(255,0,0),4)
         cv2.putText(img, 'id:'+str(key), (10,450), font, 1, (255,128,0), 2, cv2.LINE_AA)
         centre_calibrate = (round((centre[0]-origin[0])/ratio_ppc,2),round((origin[1]-centre[1])/ratio_ppc,2))
-        cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
+        #cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
     return centre_calibrate
 
 def calculate_Robot_State(img,aruco_list):  #gives the state of the bot (centre(x), centre(y), angle)
