@@ -238,12 +238,12 @@ def linear(gx,x,y):
 def main():
     print(__file__ + " start!!")
 
-    with open(file, "r") as openfile:
-        parameter = json.load(openfile)
+#    with open(file, "r") as openfile:
+#        parameter = json.load(openfile)
     
     # Input point
-    ball_coordinate = [parameter['x_coordinate_ball'],parameter['y_coordinate_ball']]
-    robot_state = [parameter['x_coordinate_robot'],parameter['y_coordinate_robot'],parameter['angle_robot']]
+    ball_coordinate = [50,20]
+    robot_state = [10,10,0]
     e_robot_state = [22,22,0]
     middle_goal_x = 90
     middle_goal_y = 0
