@@ -7,7 +7,8 @@ from transform import order_points
 from skimage.filters import threshold_local
 import argparse
 import imutils
-import math
+import json
+#import math
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True,
@@ -150,12 +151,12 @@ while True:
                             thickness = 2, 
                             lineType=cv2.LINE_4)
         prevCircle=chosen
-        lineFromCenterGoalToBall = cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)   #Line from center of goal to ball
-        len = math.sqrt(math.pow(origin[0]+90*ratio_ppc-chosen[0],2.0)+math.pow(chosen[1],2.0))
-        takeDistance = (int(origin[0]+90*ratio_ppc+(origin[0]+90*ratio_ppc-chosen[0])/len*200),int(origin[1]+(origin[1]+chosen[1])/len*200))
-        cv2.line(frame,(chosen[0],chosen[1]),(takeDistance[0],takeDistance[1]),(200,50,100),2)
+        #lineFromCenterGoalToBall = cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)   #Line from center of goal to ball
+        #len = math.sqrt(math.pow(origin[0]+90*ratio_ppc-chosen[0],2.0)+math.pow(chosen[1],2.0))
+        #takeDistance = (int(origin[0]+90*ratio_ppc+(origin[0]+90*ratio_ppc-chosen[0])/len*200),int(origin[1]+(origin[1]+chosen[1])/len*200))
+        #cv2.line(frame,(chosen[0],chosen[1]),(takeDistance[0],takeDistance[1]),(200,50,100),2)
         #cv2.circle(frame,(takeDistance[0],takeDistance[1]),1,[100,25,30],3)
-        cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)
+        #cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)
     
     #obstacle
     #ball
@@ -204,6 +205,23 @@ while True:
     cv2.imshow('circle',frame)
     cv2.imshow('blur',blur_frame)
     cv2.imshow("Scanned", warped)
+
+    if cv2.waitKey(1) & 0xFF == ord('s'):
+
+        # Data to be written
+        dictionary = {
+            "name": "sathiyajith",
+            "rollno": 56,
+            "cgpa": 8.6,
+            "phonenumber": "9976770500"
+        }
+ 
+        # Serializing json
+        json_object = json.dumps(dictionary, indent=4)
+ 
+        # Writing to sample.json
+        with open("data.json", "w") as outfile:
+            outfile.write(json_object)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

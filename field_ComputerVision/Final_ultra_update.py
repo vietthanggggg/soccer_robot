@@ -7,7 +7,6 @@ from transform import order_points
 from skimage.filters import threshold_local
 import argparse
 import imutils
-import math
 import json
 
 ap = argparse.ArgumentParser()
@@ -79,7 +78,7 @@ T = threshold_local(warped, 11, offset = 10, method = "gaussian")
 warped = (warped > T).astype("uint8") * 255
 # show the original and scanned images
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 prevCircle = None
 dist = lambda x1,y1,x2,y2: (x1-x2)**2+(y1-y2)**2
 
@@ -103,7 +102,7 @@ while True:
         robot_state = calculate_Robot_State(img1,det_aruco_list)
         robot_state_coordinate = mark_Aruco_parameter(frame,det_aruco_list,origin,ratio_ppc)
         robot_state_angle = calculate_Robot_State_angle(img1,det_aruco_list)
-        robot_state_parameter = [robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle]    #Robot coordinates (x,y,angle)
+        robot_state_parameter = (robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle)    #Robot coordinates (x,y,angle)
 
     hsv= cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
     lower_orange= np.array([20,93,161])                 #BK
@@ -145,9 +144,9 @@ while True:
                             thickness = 2, 
                             lineType=cv2.LINE_4)
         prevCircle=chosen
-        lineFromCenterGoalToBall = cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)   #Line from center of goal to ball
-        len = math.sqrt(math.pow(origin[0]+90*ratio_ppc-chosen[0],2.0)+math.pow(chosen[1],2.0))
-        takeDistance = (int(chosen[0]+(chosen[0]-origin[0]-90*ratio_ppc)/len*200),int(chosen[1] + (chosen[1]-origin[1])/len*200))
+        #lineFromCenterGoalToBall = cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)   #Line from center of goal to ball
+        #len = math.sqrt(math.pow(origin[0]+90*ratio_ppc-chosen[0],2.0)+math.pow(chosen[1],2.0))
+        #takeDistance = (int(chosen[0]+(chosen[0]-origin[0]-90*ratio_ppc)/len*200),int(chosen[1] + (chosen[1]-origin[1])/len*200))
         #cv2.line(frame,(chosen[0],chosen[1]),(takeDistance[0],takeDistance[1]),(200,50,100),2)
         #cv2.circle(frame,(takeDistance[0],takeDistance[1]),1,[100,25,30],3)
         #cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2) 
@@ -156,22 +155,30 @@ while True:
     cv2.imshow('circle',frame)
     cv2.imshow('blur',blur_frame)
     cv2.imshow("Scanned", warped)
+
+    if cv2.waitKey(1) & 0xFF == ord('s'):
+
+        # Data to be written
+        dictionary = {
+            "name_robot": "Robot parameter",
+                "x_coordinate_robot": robot_state_coordinate[0],
+                "y_coordinate_robot": robot_state_coordinate[1],
+                "angle_robot": robot_state_parameter[2],
+            "name_ball" : "Ball parameter",
+                "x_coordinate_ball": ball_coordinate[0],
+                "y_coordinate_ball": ball_coordinate[1],
+        }
+ 
+        # Serializing json
+        json_object = json.dumps(dictionary, indent=4)
+ 
+        # Writing to sample.json
+        with open("data.json", "w") as outfile:
+            outfile.write(json_object)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-        
-#INPUT PARAMETER TO DATA.JSON
-print(robot_state_parameter)
-dictionary={
-    "robot_state": robot_state_parameter
-}
-with open('data.json', "r") as file:
-    data = json.load(file)
 
-data.append(dictionary["robot_state"])
-
-with open('data.json', "w") as file:
-    json.dump(data, file)
 
 cap.release()
 cv2.destroyAllWindows()

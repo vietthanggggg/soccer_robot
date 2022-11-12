@@ -9,9 +9,6 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import json
-import os
-
-file = os.path.abspath("field_ComputerVision\data.json")
 
 show_animation = True
 
@@ -225,7 +222,7 @@ class AStarPlanner:
 
         return motion
 def linear(gx,x,y):
-    x_axis = np.linspace(gx-20,90,10)
+    x_axis = np.linspace(gx-5,90,10)
     coefficients = np.polyfit(x, y, 1)
     #print ('a =', coefficients[0])
     #print ('b =', coefficients[1])
@@ -237,13 +234,10 @@ def linear(gx,x,y):
 
 def main():
     print(__file__ + " start!!")
-
-    with open(file, "r") as openfile:
-        parameter = json.load(openfile)
     
     # Input point
-    ball_coordinate = [parameter['x_coordinate_ball'],parameter['y_coordinate_ball']]
-    robot_state = [parameter['x_coordinate_robot'],parameter['y_coordinate_robot'],parameter['angle_robot']]
+    ball_coordinate = [50,20]
+    robot_state = [10,20,30]
     e_robot_state = [22,22,0]
     middle_goal_x = 90
     middle_goal_y = 0
@@ -260,7 +254,7 @@ def main():
     grid_size = 2.0  # [cm]
     robot_radius = 2*math.sqrt(5)  # [cm]
     
-    x_axis = np.linspace(gx-20,90,10) # -5 for take a run to kick a ball
+    x_axis = np.linspace(gx-5,90,10) # -5 for take a run to kick a ball
     first_g = (x_axis[0],round(linear(gx,x_linear,y_linear)[0],1))
     # enemy's robot
     e_x = e_robot_state[0]
@@ -322,16 +316,12 @@ def main():
      
     print("FIRST MOVE POINT LIST: with "+str(len(rx))+" point")
     print(move_point_list)
-
+    
     dictionary={
-        "ball_coordinate": ball_coordinate,
-        "robot_state": robot_state,
         "move_point_list": move_point_list
     }
-
-    with open(file, "w") as outfile:
+    with open("data.json", "w") as outfile:
         json.dump(dictionary, outfile)
-    
 
     if show_animation:  # pragma: no cover
         plt.plot(x_axis,linear(gx,x_linear,y_linear) )
