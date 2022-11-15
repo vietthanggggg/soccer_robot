@@ -7,13 +7,40 @@ class Inputs():
     y = 0              # y-position of the robot
     theta = 0          # robot orientation
     dt = 0             # time delta between the last execution (used by the PID)
+    radius=0
     L = 0              # distance between the wheels
+    array_of_goals=0
 
 class Outputs():
     ''' State machine outputs '''
 
     left_motor = 0     # left motor output (0..1)
     right_motor = 0    # right motor ouput (0..1)
+    
+class State():
+    ''' When creating a new state, extend this class '''
+
+    def run(self, input, output):
+        pass
+    
+    def entry(self, input, output):
+        pass
+    
+    def exit(self, input, output):
+        pass
+
+######################################
+# States
+######################################
+
+class InitSt(State):
+    name = "Init"
+
+    def __init__(self):
+        pass
+        
+    def run(self, input, output):
+        return GoToGoalSt.name
     
 class GoToGoalSt(State):
     '''
@@ -22,7 +49,7 @@ class GoToGoalSt(State):
     '''
     name = "GoToGoal"
     next_goal = 0
-    array_of_goals = []
+    array_of_goals = self.array_of_goals
     def entry(self, input, output):
         # Set goal and next goal (in the next entry)
         self.goal = GoToGoalSt.array_of_goals[GoToGoalSt.next_goal]
@@ -51,7 +78,7 @@ class GoToGoalSt(State):
         w = self.controller.step(self.goal[0], self.goal[1], input.x, input.y, input.theta, input.dt)
         
         # Estimate the motor outpus with fixed speed of 50
-        left, right = speedEstimator.uni_to_diff(20, w, input.el,input.er,input.L)
+        left, right = speedEstimator.uni_to_diff(20, w, input.radius,input.radius,input.L)
         
         # Apply rate limits to the speed and make sure it is between 0 and 1
         print('Motor commands from PID: left, right', left, right)

@@ -40,6 +40,8 @@ s.sendall(robot_y)
 time.sleep(1)
 s.sendall(robot_theta)
 time.sleep(1)
+s.sendall(points)
+time.sleep(1)
 
 print('SENDED!') 
 
