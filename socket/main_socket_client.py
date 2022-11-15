@@ -33,15 +33,15 @@ points = points.encode()
 
 s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
-
-s.sendall(robot_x)
-time.sleep(1)
-s.sendall(robot_y)
-time.sleep(1)
-s.sendall(robot_theta)
-time.sleep(1)
-s.sendall(points)
-time.sleep(1)
+while(1):
+    s.sendall(robot_x)
+    time.sleep(1)
+    s.sendall(robot_y)
+    time.sleep(1)
+    s.sendall(robot_theta)
+    time.sleep(1)
+    s.sendall(points)
+    time.sleep(1)
 
 print('SENDED!') 
 

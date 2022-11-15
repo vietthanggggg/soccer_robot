@@ -1,6 +1,9 @@
 from encoder_esp import PID, Motor
 import time
 import localization
+import stateControl
+
+
 
 # Creating objects of each motor
 m1 = Motor(33, 32, 25, 4, 16) # Motor(M1, M2, EN, C1, C2, #frequency)
@@ -11,7 +14,6 @@ p1 = PID(m1, 2.5, 0, 10, 250) #Kp,Kd,Ki,250RPM max speed of the motor.
 p2 = PID(m2, 2.5, 0, 10, 250)
 
 
-
 # Initialize localization in cm
 wheel_radius = 4.3
 wheel_base = 10
@@ -20,26 +22,38 @@ last_left_dir = 1
 last_right_dir = 1
 
 odo = localization.odometry()
-#stControl = stateControl.stateControl()
+stControl = stateControl.stateControl()
+
 x=0
 y=0
 theta=0
-
+array_of_goals=0
 
 try:
     start_time = time.time_ns()
     while True:
         t = time.time_ns()
         dt = t - start_time
+        print(dt)
         start_time = t
-        
+
         odo.step()
-        x, y , theta = odo.getPose()
-        print(x)
-        print(y)
-        print(theta)
+        x, y , theta, array_of_goals = odo.getPose()
+        #print(type(x))
+        #print(type(array_of_goals))
+
+        # Set inputs for the state machine
         
-        break
+        stControl.input.x = x
+        stControl.input.y = y
+        stControl.input.theta = theta
+        stControl.input.dt = dt
+        stControl.input.array_of_goals= array_of_goals
+        stControl.input.L = wheel_base
+        stControl.input.radius = wheel_radius
+        stControl.step()
+        
+        
     
 except KeyboardInterrupt:
     # Press Ctrl+C to exit the application

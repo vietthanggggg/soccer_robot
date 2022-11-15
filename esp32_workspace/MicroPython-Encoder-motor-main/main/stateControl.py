@@ -1,4 +1,6 @@
 import math
+import GoToGoal
+import speedEstimator
 
 class Inputs():
     ''' State machine inputs '''
@@ -49,11 +51,15 @@ class GoToGoalSt(State):
     '''
     name = "GoToGoal"
     next_goal = 0
-    array_of_goals = self.array_of_goals
+    
     def entry(self, input, output):
         # Set goal and next goal (in the next entry)
-        self.goal = GoToGoalSt.array_of_goals[GoToGoalSt.next_goal]
-        GoToGoalSt.next_goal =(GoToGoalSt.next_goal+1)%len(GoToGoalSt.array_of_goals)
+        array_of_goals = input.array_of_goals
+        print(array_of_goals)
+        
+        self.goal = array_of_goals[GoToGoalSt.next_goal]
+        GoToGoalSt.next_goal =(GoToGoalSt.next_goal+1)%len(array_of_goals)
+        
         print("GoToGoal state", self.goal, GoToGoalSt.next_goal)
         
         # Initiate rate limit variable (assume that the robot is always stopped when
@@ -64,7 +70,7 @@ class GoToGoalSt(State):
         # Create an instance of the PID controller
         self.controller = GoToGoal.GoToGoal()
         
-        def limit(self, value, downLimit, upLimit):
+    def limit(self, value, downLimit, upLimit):
         return upLimit if value >= upLimit else downLimit if value <= downLimit else value
 
     def rateLimit(self, value, ctrlVar, upLimit, downLimit):
@@ -127,7 +133,7 @@ class AtTheGoalSt(State):
         output.right_motor = 0
     
     def run(self, input, output):
-        next_state = AtTheGoalSt.name
+        next_state = GoToGoalSt.name
         
         output.left_motor = 0
         output.right_motor = 0

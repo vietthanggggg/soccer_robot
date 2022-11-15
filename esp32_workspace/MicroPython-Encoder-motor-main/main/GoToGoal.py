@@ -27,6 +27,7 @@ class GoToGoal:
         
         # Angle from robot to goal
         theta_g = math.atan2(u_y, u_x)
+        #print(theta_g)
         
         # Error between the goal angle and robot's angle
         e_k = theta_g - theta
