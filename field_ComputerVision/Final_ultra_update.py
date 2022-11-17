@@ -8,6 +8,9 @@ from skimage.filters import threshold_local
 import argparse
 import imutils
 import json
+import os
+
+file = os.path.abspath("field_ComputerVision\data.json")
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True,
@@ -28,9 +31,9 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (5, 5), 0)
 edged = cv2.Canny(gray, 75, 200)
 # show the original image and the edge detected image
-print("STEP 1: Edge Detection")
-cv2.imshow("Image", image)
-cv2.imshow("Edged", edged)
+#print("STEP 1: Edge Detection")
+#cv2.imshow("Image", image)
+#cv2.imshow("Edged", edged)
 
 
 # find the contours in the edged image, keeping only the
@@ -49,7 +52,7 @@ for c in cnts:
 		screenCnt = approx
 		break
 # show the contour (outline) of the piece of paper
-print("STEP 2: Find contours of paper")
+#print("STEP 2: Find contours of paper")
 cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
 cv2.imshow("Outline", image)
 
@@ -60,12 +63,12 @@ rect = order_points(screenCnt.reshape(4, 2) * ratio)
 
 #Calibrate coordinate
 tl = rect[0]
-print(tl)
+#print(tl)
 bl = rect[3]
 tr = rect[1]
 br = rect[2]
 origin = (tl+bl)/2
-print(origin)
+#print(origin)
 dis_1 = ((rect[1][1]-rect[0][1])**2+(rect[1][0]-rect[0][0])**2)**0.5
 dis_2 = ((rect[3][1]-rect[2][1])**2+(rect[3][0]-rect[2][0])**2)**0.5
 dis = (dis_1+dis_2)/2
@@ -86,7 +89,9 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 det_aruco_list = {}
-print("STEP 3: Apply perspective transform")
+#print("STEP 3: Apply perspective transform")
+
+ball_coordinate = [0,0]
 
 while True:
     ret,n_frame = cap.read()
@@ -99,14 +104,14 @@ while True:
         origin = (tl+bl)/2
         ratio_ppc = dis/90
         img1 = mark_Aruco(frame,det_aruco_list,origin,ratio_ppc)
-        robot_state = calculate_Robot_State(img1,det_aruco_list)
-        robot_state_coordinate = mark_Aruco_parameter(frame,det_aruco_list,origin,ratio_ppc)
-        robot_state_angle = calculate_Robot_State_angle(img1,det_aruco_list)
-        robot_state_parameter = (robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle)    #Robot coordinates (x,y,angle)
-
+        robot_state = calculate_Robot_State(img1,det_aruco_list,origin,ratio_ppc)
+        #robot_state_coordinate = mark_Aruco_parameter(frame,det_aruco_list,origin,ratio_ppc)
+        #robot_state_angle = calculate_Robot_State_angle(img1,det_aruco_list)
+        #robot_state_parameter = (robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle)    #Robot coordinates (x,y,angle)
+    
     hsv= cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    lower_orange= np.array([20,93,161])                 #BK
-    upper_orange= np.array([30,150,255])                 #BK
+    lower_orange= np.array([26,25,216])                 #BK
+    upper_orange= np.array([32,125,255])                 #BK
     # lower_orange= np.array([20,36,103])                 #KTX
     # upper_orange= np.array([35,255,255])                 #KTX
     mask=cv2.inRange(hsv,lower_orange,upper_orange)
@@ -133,7 +138,8 @@ while True:
                    chosen=i
         cv2.circle(frame,(chosen[0],chosen[1]),1,(0,100,100),3) 
         cv2.circle(frame,(chosen[0],chosen[1]),chosen[2],(0,255,0),3)
-        ball_coordinate = (round((chosen[0]-origin[0])/ratio_ppc,2),round((origin[1]-chosen[1])/ratio_ppc,2))  
+        ball_coordinate = (round((chosen[0]-origin[0])/ratio_ppc,2),round((origin[1]-chosen[1])/ratio_ppc,2))
+        #print(ball_coordinate)  
         text='('+str(ball_coordinate[0])+', '+str(ball_coordinate[1])+')'
         frame = cv2.putText(frame, 
                             text, 
@@ -144,37 +150,29 @@ while True:
                             thickness = 2, 
                             lineType=cv2.LINE_4)
         prevCircle=chosen
-        #lineFromCenterGoalToBall = cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2)   #Line from center of goal to ball
-        #len = math.sqrt(math.pow(origin[0]+90*ratio_ppc-chosen[0],2.0)+math.pow(chosen[1],2.0))
-        #takeDistance = (int(chosen[0]+(chosen[0]-origin[0]-90*ratio_ppc)/len*200),int(chosen[1] + (chosen[1]-origin[1])/len*200))
-        #cv2.line(frame,(chosen[0],chosen[1]),(takeDistance[0],takeDistance[1]),(200,50,100),2)
-        #cv2.circle(frame,(takeDistance[0],takeDistance[1]),1,[100,25,30],3)
-        #cv2.line(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),(chosen[0],chosen[1]),(50,156,100),2) 
-        #cv2.line(frame,(robot_state_coordinate[0],robot_state_coordinate[1]),(int(chosen[0]+(chosen[0]-origin[0]-90*ratio_ppc)/len*200),int(chosen[1] + (chosen[1]-origin[1])/len*200)),(50,156,100),2) 
-
+        
     cv2.imshow('circle',frame)
-    cv2.imshow('blur',blur_frame)
-    cv2.imshow("Scanned", warped)
+    #cv2.imshow('blur',blur_frame)
+    #cv2.imshow("Scanned", warped)
 
-    if cv2.waitKey(1) & 0xFF == ord('s'):
 
         # Data to be written
-        dictionary = {
-            "name_robot": "Robot parameter",
-                "x_coordinate_robot": robot_state_coordinate[0],
-                "y_coordinate_robot": robot_state_coordinate[1],
-                "angle_robot": robot_state_parameter[2],
-            "name_ball" : "Ball parameter",
-                "x_coordinate_ball": ball_coordinate[0],
-                "y_coordinate_ball": ball_coordinate[1],
-        }
- 
-        # Serializing json
-        json_object = json.dumps(dictionary, indent=4)
- 
-        # Writing to sample.json
-        with open("data.json", "w") as outfile:
-            outfile.write(json_object)
+
+    #json_object = json.dumps(dictionary, indent = 4)
+    with open(file, "r+") as outfile:
+        #json.dump(dictionary, outfile)
+        j = json.load(outfile)
+        j['ball_x'] = ball_coordinate[0]
+        j['ball_y'] = ball_coordinate[1]
+        j['robot_x'] = float(robot_state[0][0])
+        j['robot_y'] = float(robot_state[0][1])
+        j['robot_theta'] = float(robot_state[0][2])
+        #j['det_aruco_list'] = robot_state
+        outfile.seek(0)
+        json.dump(j,outfile)
+        outfile.truncate()
+
+
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

@@ -1,2 +1,2 @@
 #THE SCRIPT TO RUN THE CODE:
-python .\cv_code.py --image 'D:\BK-DOCS\Luan Van\field_ComputerVision\field_img.jpg'
+python .\field_ComputerVision\Final_ultra_update.py --image 'D:\BK-DOCS\Luan Van\field_ComputerVision\field_img.jpg'

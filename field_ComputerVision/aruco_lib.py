@@ -51,6 +51,7 @@ def detect_Aruco(img):  #returns the detected aruco list dictionary with id: cor
             aruco_list[temp_2] = temp_1
         return aruco_list
 
+
 def mark_Aruco(img, aruco_list,origin,ratio_ppc):    #function to mark the centre and display the id
     key_list = aruco_list.keys()
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -103,7 +104,7 @@ def mark_Aruco_parameter(img, aruco_list,origin,ratio_ppc):    #function to mark
         #cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
     return centre_calibrate
 
-def calculate_Robot_State(img,aruco_list):  #gives the state of the bot (centre(x), centre(y), angle)
+def calculate_Robot_State(img,aruco_list,origin,ratio_ppc):  #gives the state of the bot (centre(x), centre(y), angle)
     robot_state = {}
     key_list = aruco_list.keys()
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -117,7 +118,7 @@ def calculate_Robot_State(img,aruco_list):  #gives the state of the bot (centre(
         #print centre
         angle = round(angle_calculate(pt1, pt2),2)
         cv2.putText(img, str(angle), (int(centre[0] - 80), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)
-        robot_state[key] = (round(centre[0],2), round(centre[1],2), angle)#HOWEVER IF YOU ARE SCALING IMAGE AND ALL...THEN BETTER INVERT X AND Y...COZ THEN ONLY THE RATIO BECOMES SAME
+        robot_state[key] = (round((centre[0]-origin[0])/ratio_ppc,2), round((origin[1]-centre[1])/ratio_ppc,2), angle)#HOWEVER IF YOU ARE SCALING IMAGE AND ALL...THEN BETTER INVERT X AND Y...COZ THEN ONLY THE RATIO BECOMES SAME
 
     return robot_state    
 
