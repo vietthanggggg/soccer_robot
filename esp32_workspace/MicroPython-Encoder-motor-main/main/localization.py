@@ -39,6 +39,8 @@ class odometry():
         request = conn.recv(1024)
         self.array_of_goals = request.decode()
         
+        
+        
         #Convert str to float and list
         self.x = float(self.x)
         self.y = float(self.y)

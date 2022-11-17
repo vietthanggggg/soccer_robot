@@ -84,7 +84,7 @@ class GoToGoalSt(State):
         w = self.controller.step(self.goal[0], self.goal[1], input.x, input.y, input.theta, input.dt)
         
         # Estimate the motor outpus with fixed speed of 50
-        left, right = speedEstimator.uni_to_diff(20, w, input.radius,input.radius,input.L)
+        left, right = speedEstimator.uni_to_diff(5, w, input.radius,input.radius,input.L)
         
         # Apply rate limits to the speed and make sure it is between 0 and 1
         print('Motor commands from PID: left, right', left, right)
@@ -98,25 +98,28 @@ class GoToGoalSt(State):
         
         print('left 2, right 2', left2, right2)
 
-        left3 = self.rateLimit(left2, self.leftPrevCmd, 10, -10)
-        right3 = self.rateLimit(right2, self.rightPrevCmd, 10, -10)
-        left3 = left3 if left3 >=50 else 50
-        right3 = right3 if right3 >= 50 else 50
+        left3 = self.rateLimit(left2, self.leftPrevCmd, 0.05, -0.05)
+        right3 = self.rateLimit(right2, self.rightPrevCmd, 0.05, -0.05)
+        left3 = left3 if left3 >=0.1 else 0.1
+        right3 = right3 if right3 >= 0.1 else 0.1
+        
         
         self.leftPrevCmd = left3
         self.rightPrevCmd = right3
         print("left3, right 3", left3, right3)
+        output_left = left3*10
+        output_right = right3*10
         
         # Make sure ouputs are not negative (robot can not reverse yet)
         left2 = left2 if left2 >= 0 else 0
         right2 = right2 if right2 >=0 else 0
-        output.left_motor = left3
-        output.right_motor = right3
+        output.left_motor = output_left
+        output.right_motor = output_right
         print('GoToGoal outputs:', output.left_motor, output.right_motor)
         
         # Check if it is in the goal. If yes, change state
-        if (abs(input.x - self.goal[0]) < 0.08 and
-            abs(input.y - self.goal[1]) < 0.08):
+        if (abs(input.x - self.goal[0]) < 1.5 and
+            abs(input.y - self.goal[1]) < 1.5):
             next_state = AtTheGoalSt.name
         
         return next_state
