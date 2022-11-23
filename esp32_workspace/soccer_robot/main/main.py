@@ -49,9 +49,12 @@ try:
         stControl.input.L = wheel_base
         stControl.input.radius = wheel_radius
         stControl.step()
+        print(stControl.output.left_motor)
+        if(stControl.output.left_motor!=0):
+            p1.setSpeed_L(stControl.output.left_motor)
+        if(stControl.output.right_motor!=0):
+            p2.setSpeed_R(stControl.output.right_motor)
         
-        p1.setSpeed_L(stControl.output.left_motor)
-        p2.setSpeed_R(stControl.output.right_motor)
         if(stControl.output.left_motor==0):
             m1.speed(0)
         if(stControl.output.right_motor==0):

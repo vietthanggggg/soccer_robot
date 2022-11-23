@@ -181,8 +181,9 @@ class PID:
         self.vPrev_R = v
         
         # Call for control signal
-        x = int(self.evalu(self.vFilt_R, vt, deltaT))
         
+        x = int(self.evalu(self.vFilt_R, vt, deltaT))
+        print(x)
         # Set the motor speed
         self.M.speed(x)
         #print(self.vFilt_R, vt)   # For debugging

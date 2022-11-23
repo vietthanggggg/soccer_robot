@@ -1,11 +1,6 @@
 from encoder_esp import PID, Motor
 import time
-import esp_server_hello_world
-try:
-  import usocket as socket
-except:
-  import socket
-import ujson as json
+
 
 # Creating objects of each motor
 m1 = Motor(33, 32, 25, 4, 16) # Motor(M1, M2, EN, C1, C2, #frequency)
@@ -17,10 +12,12 @@ p2 = PID(m2, 2.5, 0, 10, 250)
 
 
 while(1):
-    p1.setSpeed_L(5)
-    p2.setSpeed_R(5)
+    #m1.speed(75)// on dinh
+    #m2.speed(50)
+    p1.setSpeed_R(50)
+    #p2.setSpeed_L(50)
     
-    print("L/R: ", round(p1.vFilt_L,2), round(p2.vFilt_R,2))
+    print("L/R: ", round(p2.vFilt_L,2), round(p1.vFilt_R,2))
     
     
     #m2.speed(0)
