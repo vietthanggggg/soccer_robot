@@ -222,7 +222,7 @@ class AStarPlanner:
 
         return motion
 def linear(gx,x,y):
-    x_axis = np.linspace(gx-5,90,10)
+    x_axis = np.linspace(gx,90,10)
     coefficients = np.polyfit(x, y, 1)
     #print ('a =', coefficients[0])
     #print ('b =', coefficients[1])
@@ -257,11 +257,14 @@ def main():
     gx = ball_coordinate[0] # [cm]
     gy = ball_coordinate[1]  # [cm]
     
-    grid_size = 10.0  # [cm]
+    grid_size = 5.0  # [cm]
     robot_radius = 2*math.sqrt(5)  # [cm]
     
-    x_axis = np.linspace(gx-5,90,10) # -5 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-15,90,10) # -15 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-15,x_linear,y_linear)[0],1))
+
+    x_axis_f = np.linspace(gx+5,90,10)
+    final_g = (x_axis_f[0],round(linear(gx+5,x_linear,y_linear)[0],1))
     # enemy's robot
     e_x = e_robot_state[0]
     e_y = e_robot_state[1]
@@ -313,6 +316,13 @@ def main():
     
     rx.append(first_g[0])
     ry.append(first_g[1])
+
+    #rx.append(gx)
+    #ry.append(gy)
+
+    rx.append(final_g[0])
+    ry.append(final_g[1])
+
     rx.remove(rx[0])
     ry.remove(ry[0])
     
