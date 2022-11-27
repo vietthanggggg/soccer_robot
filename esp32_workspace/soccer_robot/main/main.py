@@ -15,7 +15,7 @@ m1.speed(0)
 m2.speed(0)
 # Initialize localization in cm
 wheel_radius = 4.3
-wheel_base = 10
+wheel_base = 10.5
 
 last_left_dir = 1
 last_right_dir = 1
@@ -33,12 +33,12 @@ try:
     while True:
         t = time.time_ns()
         dt = t - start_time
-        print(dt)
+        #print(dt)
         start_time = t
 
         odo.step()
         x, y , theta, array_of_goals = odo.getPose()
-        print(x,y,theta)
+        #print(x,y,theta)
         # Set inputs for the state machine
         
         stControl.input.x = x
@@ -49,16 +49,14 @@ try:
         stControl.input.L = wheel_base
         stControl.input.radius = wheel_radius
         stControl.step()
-        print(stControl.output.left_motor)
-        if(stControl.output.left_motor!=0):
-            p1.setSpeed_L(stControl.output.left_motor)
-        if(stControl.output.right_motor!=0):
-            p2.setSpeed_R(stControl.output.right_motor)
         
-        if(stControl.output.left_motor==0):
-            m1.speed(0)
-        if(stControl.output.right_motor==0):
-            m2.speed(0)
+        
+        #print(stControl.output.left_motor)
+        
+        
+        m1.speed(int(stControl.output.right_motor))
+        m2.speed(int(stControl.output.left_motor)) 
+       
 
             
     

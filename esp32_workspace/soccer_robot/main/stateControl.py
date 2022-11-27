@@ -51,15 +51,18 @@ class GoToGoalSt(State):
     '''
     name = "GoToGoal"
     next_goal = 0
+    shoot = -1
     
     def entry(self, input, output):
         # Set goal and next goal (in the next entry)
         array_of_goals = input.array_of_goals
         print(array_of_goals)
-        
         self.goal = array_of_goals[GoToGoalSt.next_goal]
+        if(self.goal==0):
+            GoToGoalSt.shoot = GoToGoalSt.shoot+1
         GoToGoalSt.next_goal =(GoToGoalSt.next_goal+1)%len(array_of_goals)
         
+            
         print("GoToGoal state", self.goal, GoToGoalSt.next_goal)
         
         # Initiate rate limit variable (assume that the robot is always stopped when
@@ -97,30 +100,52 @@ class GoToGoalSt(State):
             right2 = right/right
         
         print('left 2, right 2', left2, right2)
-
-        left3 = self.rateLimit(left2, self.leftPrevCmd, 0.05, -0.05)
-        right3 = self.rateLimit(right2, self.rightPrevCmd, 0.05, -0.05)
-        left3 = left3 if left3 >=0.1 else 0.1
-        right3 = right3 if right3 >= 0.1 else 0.1
         
-        
-        self.leftPrevCmd = left3
-        self.rightPrevCmd = right3
-        print("left3, right 3", left3, right3)
-        output_left = left3*10
-        output_right = right3*10
-        
-        # Make sure ouputs are not negative (robot can not reverse yet)
-        left2 = left2 if left2 >= 0 else 0
-        right2 = right2 if right2 >=0 else 0
-        output.left_motor = output_left
-        output.right_motor = output_right
-        print('GoToGoal outputs:', output.left_motor, output.right_motor)
+        if(GoToGoalSt.shoot==1):
+            left3 = self.rateLimit(left2, self.leftPrevCmd, 0.2, -0.2)
+            right3 = self.rateLimit(right2, self.rightPrevCmd, 0.2, -0.2)
+            left3 = left3 if left3 >=0.1 else 0.1
+            right3 = right3 if right3 >= 0.1 else 0.1
+            
+            
+            self.leftPrevCmd = left3
+            self.rightPrevCmd = right3
+            print("left3, right 3", left3, right3)
+            output_left = left3*100
+            output_right = right3*100
+            
+            # Make sure ouputs are not negative (robot can not reverse yet)
+            left2 = left2 if left2 >= 0 else 0
+            right2 = right2 if right2 >=0 else 0
+            output.left_motor = output_left
+            output.right_motor = output_right
+            print('GoToGoal outputs:', output.left_motor, output.right_motor)
+        else:
+            left3 = self.rateLimit(left2, self.leftPrevCmd, 0.2, -0.2)
+            right3 = self.rateLimit(right2, self.rightPrevCmd, 0.2, -0.2)
+            left3 = left3 if left3 >=0.1 else 0.1
+            right3 = right3 if right3 >= 0.1 else 0.1
+            
+            
+            self.leftPrevCmd = left3
+            self.rightPrevCmd = right3
+            print("left3, right 3", left3, right3)
+            output_left = left3*30
+            output_right = right3*30
+            
+            # Make sure ouputs are not negative (robot can not reverse yet)
+            left2 = left2 if left2 >= 0 else 0
+            right2 = right2 if right2 >=0 else 0
+            output.left_motor = output_left
+            output.right_motor = output_right
+            print('GoToGoal outputs:', output.left_motor, output.right_motor)
         
         # Check if it is in the goal. If yes, change state
-        if (abs(input.x - self.goal[0]) < 1.5 and
-            abs(input.y - self.goal[1]) < 1.5):
+        if (abs(input.x - self.goal[0]) < 3 and
+            abs(input.y - self.goal[1]) < 3):
             next_state = AtTheGoalSt.name
+            
+    
         
         return next_state
     
@@ -142,6 +167,8 @@ class AtTheGoalSt(State):
         output.right_motor = 0
         
         return  next_state
+
+        
     
 class stateControl():
     '''

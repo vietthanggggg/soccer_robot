@@ -21,21 +21,21 @@ class GoToGoal:
         # Distance between goal and robot in y direction
         u_y = y_g - y
         
-        if (abs(u_x) < 1.5 and abs(u_y < 1.5)):
+        if (abs(u_x) < 3 and abs(u_y < 3)):
             print("GOoooOOOOOlLLL", x, y)
             return 0
         
         # Angle from robot to goal
         theta_g = math.atan2(u_y, u_x)
-        print("theta_g="+str(theta_g))
+        
         if(theta<=180):
             theta=math.radians(theta)
         else:
             theta=math.radians(theta-360)
-        print("theta"+str(theta))
+        
         # Error between the goal angle and robot's angle
         e_k = theta_g - theta
-        print(e_k)
+        
         e_k = math.atan2(math.sin(e_k), math.cos(e_k))
         
         # Error for the proportional term

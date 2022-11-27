@@ -18,7 +18,7 @@ class speedEstimator():
 
 def uni_to_diff(v,w,radius_r,radius_l, L):
 
-    vel_r = (2 * v + w * L)/(2 * radius_r);
-    vel_l = (2 * v - w * L)/(2 * radius_l);
+    vel_r = (2 * v - w * L)/(2 * radius_r);
+    vel_l = (2 * v + w * L)/(2 * radius_l);
     
     return vel_l, vel_r
