@@ -6,7 +6,7 @@ import time
 file = os.path.abspath("D:/BK-DOCS/Luan Van/field_ComputerVision/data.json")
 
 HOST = "172.20.10.2"  # The server's hostname or IP address
-PORT = 90  # The port used by the server
+PORT = 70  # The port used by the server
 
 
 #data = json.load(f)

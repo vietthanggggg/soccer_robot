@@ -11,6 +11,7 @@ import json
 import os
 
 file = os.path.abspath("field_ComputerVision\data.json")
+brightness =0
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True,
@@ -92,6 +93,7 @@ det_aruco_list = {}
 #print("STEP 3: Apply perspective transform")
 
 ball_coordinate = [0,0]
+robot_state=[0,0,0]
 
 while True:
     ret,n_frame = cap.read()
@@ -118,10 +120,7 @@ while True:
     result=cv2.bitwise_and(frame,frame,mask=mask)
     gray_frame = cv2.cvtColor(result,cv2.COLOR_BGR2GRAY)
     blur_frame = cv2.GaussianBlur(gray_frame,(17,17),0)
-    #print(robot_state_coordinate[0])
-    #print(robot_state_coordinate[1])
-
-
+    
     cv2.circle(frame,(int(origin[0]),int(origin[1])),1,(255,0,0),-3)                                      #Origin
     cv2.circle(frame,(int(origin[0]+90*ratio_ppc),int(origin[1])),1,(255,0,0),-3)                        #Center of goal
     
@@ -152,9 +151,6 @@ while True:
         prevCircle=chosen
         
     cv2.imshow('circle',frame)
-    #cv2.imshow('blur',blur_frame)
-    #cv2.imshow("Scanned", warped)
-
 
         # Data to be written
 
@@ -174,7 +170,17 @@ while True:
 
 
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1)
+    if key == ord('b'):
+        brightness -= 1
+        cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)
+        print(brightness)
+    elif key == ord('r'):
+        brightness += 1
+        cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)
+        print(brightness)
+
+    elif key == ord('q'):
         break
 
 

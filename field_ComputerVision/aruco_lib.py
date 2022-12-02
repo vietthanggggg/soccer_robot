@@ -14,12 +14,13 @@ functions in this file:
 
 def angle_calculate(pt1,pt2, trigger = 0):  # function which returns angle between two points in the range of 0-359
     angle_list_1 = list(range(359,0,-1))
-    #angle_list_1 = angle_list_1[90:] + angle_list_1[:90]
+    
     angle_list_2 = list(range(359,0,-1))
     angle_list_2 = angle_list_2[-90:] + angle_list_2[:-90]
     x=pt2[0]-pt1[0] # unpacking tuple
     y=pt2[1]-pt1[1]
-    angle=int(math.degrees(math.atan2(y,x))) #takes 2 points nad give angle with respect to horizontal axis in range(-180,180)
+    angle = int(math.degrees(math.atan2(y,x)))
+    angle_float = round(math.degrees(math.atan2(y,x)),2) #takes 2 points nad give angle with respect to horizontal axis in range(-180,180)
     if trigger == 0:
         angle = angle_list_2[angle]
     else:

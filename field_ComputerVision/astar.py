@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 
+
 show_animation = True
 
 
@@ -260,11 +261,11 @@ def main():
     grid_size = 5.0  # [cm]
     robot_radius = 2*math.sqrt(5)  # [cm]
     
-    x_axis = np.linspace(gx-15,90,10) # -15 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-15,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-6,90,10) # -15 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-6,x_linear,y_linear)[0],1))
 
-    x_axis_f = np.linspace(gx+5,90,10)
-    final_g = (x_axis_f[0],round(linear(gx+5,x_linear,y_linear)[0],1))
+    x_axis_f = np.linspace(gx+15,90,10)
+    final_g = (x_axis_f[0],round(linear(gx+15,x_linear,y_linear)[0],1))
     # enemy's robot
     e_x = e_robot_state[0]
     e_y = e_robot_state[1]
@@ -339,7 +340,7 @@ def main():
     #     "move_point_list": move_point_list
     # }
 
-    with open('data.json', 'r+') as openfile:
+    with open("data.json", 'r+') as openfile:
         j = json.load(openfile)
         j['move_point_list'] = move_point_list
         openfile.seek(0)
