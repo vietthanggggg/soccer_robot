@@ -34,7 +34,7 @@ edged = cv2.Canny(gray, 75, 200)
 # show the original image and the edge detected image
 #print("STEP 1: Edge Detection")
 #cv2.imshow("Image", image)
-#cv2.imshow("Edged", edged)
+cv2.imshow("Edged", edged)
 
 
 # find the contours in the edged image, keeping only the
@@ -82,7 +82,7 @@ T = threshold_local(warped, 11, offset = 10, method = "gaussian")
 warped = (warped > T).astype("uint8") * 255
 # show the original and scanned images
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 prevCircle = None
 dist = lambda x1,y1,x2,y2: (x1-x2)**2+(y1-y2)**2
 
@@ -155,27 +155,48 @@ while True:
         # Data to be written
 
     #json_object = json.dumps(dictionary, indent = 4)
-    with open(file, "r+") as outfile:
-        #json.dump(dictionary, outfile)
-        j = json.load(outfile)
-        j['ball_x'] = ball_coordinate[0]
-        j['ball_y'] = ball_coordinate[1]
-        j['robot_x'] = float(robot_state[0][0])
-        j['robot_y'] = float(robot_state[0][1])
-        j['robot_theta'] = float(robot_state[0][2])
-        #j['det_aruco_list'] = robot_state
-        outfile.seek(0)
-        json.dump(j,outfile)
-        outfile.truncate()
+    try:
+        with open(file, "r+") as outfile:
+            try:
+                #json.dump(dictionary, outfile)
+                j = json.load(outfile)
+                try:
+                    j['ball_x'] = ball_coordinate[0]
+                    j['ball_y'] = ball_coordinate[1]
+                except KeyError|TypeError:
+                    ball_coordinate=0
+                    print('Can not recognize ball')
+                try:
+                    j['robot_x'] = float(robot_state[0][0])
+                    j['robot_y'] = float(robot_state[0][1])
+                    j['robot_theta'] = float(robot_state[0][2])
+                except KeyError|TypeError:
+                    robot_state=0
+                    print('Can not recognize Messi')
+                try:
+                    j['enemy_x'] = float(robot_state[1][0])
+                    j['enemy_y'] = float(robot_state[1][1])
+                    j['enemy_theta'] = float(robot_state[1][2])
+                except KeyError|TypeError:
+                    print('Can not recognize enemy')
+                    robot_state=0
+                #j['det_aruco_list'] = robot_state
+                outfile.seek(0)
+                json.dump(j,outfile)
+                outfile.truncate()
+            except:
+                print('can not load json')
+    except:
+        print('Can not open file')
 
 
     
     key = cv2.waitKey(1)
-    if key == ord('b'):
+    if key == ord('r'):
         brightness -= 1
         cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)
         print(brightness)
-    elif key == ord('r'):
+    elif key == ord('t'):
         brightness += 1
         cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)
         print(brightness)

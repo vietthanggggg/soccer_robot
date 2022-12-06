@@ -9,7 +9,9 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import os
 
+file = os.path.abspath("data.json")
 
 show_animation = True
 
@@ -239,13 +241,13 @@ def main():
     # with open("data.json", "r") as openfile:
     #     parameter = json.load(openfile)
 
-    with open("data.json", "r+") as openfile:
+    with open(file, "r+") as openfile:
         parameter = json.load(openfile)
     
     # Input point
     ball_coordinate = [parameter['ball_x'],parameter['ball_y']]
     robot_state = [parameter['robot_x'],parameter['robot_y'],parameter['robot_theta']]
-    e_robot_state = [22,22,0]
+    e_robot_state = [parameter['enemy_x'],parameter['enemy_y'],parameter['enemy_theta']]
     middle_goal_x = 90
     middle_goal_y = 0
     
@@ -258,17 +260,18 @@ def main():
     gx = ball_coordinate[0] # [cm]
     gy = ball_coordinate[1]  # [cm]
     
-    grid_size = 5.0  # [cm]
-    robot_radius = 2*math.sqrt(5)  # [cm]
+    grid_size = 10.0  # [cm]
+    robot_radius = 5*math.sqrt(2) # [cm]
     
-    x_axis = np.linspace(gx-6,90,10) # -15 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-6,x_linear,y_linear)[0],1))
+    #CONFIG DISTANCE OF SHOOTING BALL
+    x_axis = np.linspace(gx-15,90,10) # -15 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-15,x_linear,y_linear)[0],1))
 
-    x_axis_f = np.linspace(gx+15,90,10)
-    final_g = (x_axis_f[0],round(linear(gx+15,x_linear,y_linear)[0],1))
+    
     # enemy's robot
-    e_x = e_robot_state[0]
-    e_y = e_robot_state[1]
+    e_x = int(e_robot_state[0])
+    e_y = int(e_robot_state[1])
+    e_theta = e_robot_state[2]
 
     # set obstacle positions
     ox, oy = [], []
@@ -281,20 +284,32 @@ def main():
     for i in range(0, 90):
         ox.append(i)
         oy.append(38)
-    for i in range(-38, 38):
+    for i in range(20, 38):
         ox.append(90)
         oy.append(i)
-    for i in range(e_x-5, e_x+5):
-        ox.append(i)
-        oy.append(e_y-5)
-    for i in range(e_x-5, e_x+5):
-        ox.append(i)
-        oy.append(e_y+5)
-    for i in range(e_y-5, e_y+5):
-        ox.append(e_x-5)
+    for i in range(-38, -20):
+        ox.append(90)
         oy.append(i)
-    for i in range(e_y-5, e_y+5):
-        ox.append(e_x+5)
+    for i in range(90, 100):
+        ox.append(i)
+        oy.append(20)
+    for i in range(90, 100):
+        ox.append(i)
+        oy.append(-20)
+    for i in range(-20, 20):
+        ox.append(100)
+        oy.append(i)
+    for i in range(e_x-6, e_x+6):
+        ox.append(i)
+        oy.append(e_y-6)
+    for i in range(e_x-6, e_x+6):
+        ox.append(i)
+        oy.append(e_y+6)
+    for i in range(e_y-6, e_y+6):
+        ox.append(e_x-6)
+        oy.append(i)
+    for i in range(e_y-6, e_y+6):
+        ox.append(e_x+6)
         oy.append(i)
 
     if show_animation:  # pragma: no cover
@@ -315,14 +330,17 @@ def main():
     rx.reverse()
     ry.reverse()
     
+    rx.remove(rx[len(rx)-1])
+    ry.remove(ry[len(ry)-1])
+
     rx.append(first_g[0])
     ry.append(first_g[1])
 
+    rx.append(x_linear[0])
+    ry.append(y_linear[0])
+
     #rx.append(gx)
     #ry.append(gy)
-
-    rx.append(final_g[0])
-    ry.append(final_g[1])
 
     rx.remove(rx[0])
     ry.remove(ry[0])
@@ -340,7 +358,7 @@ def main():
     #     "move_point_list": move_point_list
     # }
 
-    with open("data.json", 'r+') as openfile:
+    with open(file, 'r+') as openfile:
         j = json.load(openfile)
         j['move_point_list'] = move_point_list
         openfile.seek(0)
