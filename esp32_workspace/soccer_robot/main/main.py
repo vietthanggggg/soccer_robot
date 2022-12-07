@@ -58,8 +58,6 @@ try:
         m2.speed(int(stControl.output.left_motor)) 
        
 
-            
-    
 except KeyboardInterrupt:
     # Press Ctrl+C to exit the application
     pass

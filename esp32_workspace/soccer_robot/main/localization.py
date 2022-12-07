@@ -7,7 +7,7 @@ except:
 import ujson as json
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(("172.20.10.2", 90))
+s.bind(("172.20.10.2", 70))
 s.listen(5)
 conn, addr = s.accept()
 print('Got a connection from %s' % str(addr))
@@ -39,13 +39,12 @@ class odometry():
         request = conn.recv(1024)
         self.array_of_goals = request.decode()
         
-        
-        
         #Convert str to float and list
         self.x = float(self.x)
         self.y = float(self.y)
-        self.theta= float(self.theta)
+        self.theta = float(self.theta)
         self.array_of_goals = eval(self.array_of_goals)
+            
         
         return self.x, self.y, self.theta, self.array_of_goals
         

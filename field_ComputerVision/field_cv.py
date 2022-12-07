@@ -145,11 +145,18 @@ while True:
                             (chosen[0]+70,chosen[1]),
                             cv2.FONT_HERSHEY_SIMPLEX, 
                             fontScale=1,
-                            color = (255, 0, 0), 
+                            color = (0, 255, 0), 
                             thickness = 2, 
                             lineType=cv2.LINE_4)
         prevCircle=chosen
-        
+    cv2.putText(frame, 
+                            'brightness:'+str(brightness), 
+                            (10,550),
+                            cv2.FONT_HERSHEY_SIMPLEX, 
+                            fontScale=1,
+                            color = (255, 0, 0), 
+                            thickness = 2, 
+                            lineType=cv2.LINE_4)
     cv2.imshow('circle',frame)
 
         # Data to be written
@@ -189,13 +196,13 @@ while True:
     except:
         print('Can not open file')
 
-
     
     key = cv2.waitKey(1)
     if key == ord('r'):
         brightness -= 1
         cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)
         print(brightness)
+        
     elif key == ord('t'):
         brightness += 1
         cap.set(cv2.CAP_PROP_BRIGHTNESS,brightness)

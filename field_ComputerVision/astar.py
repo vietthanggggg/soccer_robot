@@ -264,8 +264,8 @@ def main():
     robot_radius = 5*math.sqrt(2) # [cm]
     
     #CONFIG DISTANCE OF SHOOTING BALL
-    x_axis = np.linspace(gx-15,90,10) # -15 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-15,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-10,90,10) # -10 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-10,x_linear,y_linear)[0],1))
 
     
     # enemy's robot
@@ -336,8 +336,11 @@ def main():
     rx.append(first_g[0])
     ry.append(first_g[1])
 
-    rx.append(x_linear[0])
-    ry.append(y_linear[0])
+    rx.append(ball_coordinate[0])
+    ry.append(ball_coordinate[1])
+
+    #rx.append(x_linear[0])#middle of the goal
+    #ry.append(y_linear[0])
 
     #rx.append(gx)
     #ry.append(gy)

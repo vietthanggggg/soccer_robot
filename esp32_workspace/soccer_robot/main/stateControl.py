@@ -1,6 +1,7 @@
 import math
 import GoToGoal
 import speedEstimator
+import time
 
 class Inputs():
     ''' State machine inputs '''
@@ -51,17 +52,18 @@ class GoToGoalSt(State):
     '''
     name = "GoToGoal"
     next_goal = 0
-    shoot = -1
+    shoot = 0
     
     def entry(self, input, output):
         # Set goal and next goal (in the next entry)
         array_of_goals = input.array_of_goals
         print(array_of_goals)
         self.goal = array_of_goals[GoToGoalSt.next_goal]
-        if(self.goal==0):
-            GoToGoalSt.shoot = GoToGoalSt.shoot+1
-        GoToGoalSt.next_goal =(GoToGoalSt.next_goal+1)%len(array_of_goals)
         
+        GoToGoalSt.next_goal =(GoToGoalSt.next_goal+1)%len(array_of_goals)
+        if(GoToGoalSt.next_goal==0):
+            GoToGoalSt.shoot = GoToGoalSt.shoot+1
+            print("Shoot!!!")
             
         print("GoToGoal state", self.goal, GoToGoalSt.next_goal)
         
@@ -86,41 +88,67 @@ class GoToGoalSt(State):
         # Run controller
         w = self.controller.step(self.goal[0], self.goal[1], input.x, input.y, input.theta, input.dt)
         
-        # Estimate the motor outpus with fixed speed of 50
-        left, right = speedEstimator.uni_to_diff(5, w, input.radius,input.radius,input.L)
-        
-        # Apply rate limits to the speed and make sure it is between 0 and 1
-        print('Motor commands from PID: left, right', left, right)
-
-        if left > right:
-            left2 = left/left
-            right2 = right/left
-        else:
-            left2 = left/right
-            right2 = right/right
-        
-        print('left 2, right 2', left2, right2)
-        
+        # ROTATE TO SHOOTING STATE
         if(GoToGoalSt.shoot==1):
-            left3 = self.rateLimit(left2, self.leftPrevCmd, 0.2, -0.2)
-            right3 = self.rateLimit(right2, self.rightPrevCmd, 0.2, -0.2)
-            left3 = left3 if left3 >=0.1 else 0.1
-            right3 = right3 if right3 >= 0.1 else 0.1
+                # Estimate the motor outpus with fixed speed of 50
+            left,right = speedEstimator.uni_to_diff(0, w, input.radius,input.radius,input.L)
             
+            # Apply rate limits to the speed and make sure it is between 0 and 1
+            print('Motor commands from PID: left, right', left, right)
+
+            if left > right:
+                left2 = left/left
+                right2 = right/left
+            else:
+                left2 = left/right
+                right2 = right/right
+            
+            print('left 2, right 2', left2, right2)
+            
+            left3 = self.rateLimit(left2, self.leftPrevCmd, 1, -1)
+            right3 = self.rateLimit(right2, self.rightPrevCmd, 1, -1)
             
             self.leftPrevCmd = left3
             self.rightPrevCmd = right3
             print("left3, right 3", left3, right3)
-            output_left = left3*100
-            output_right = right3*100
+            output_left = left3*25
+            output_right = right3*25
             
-            # Make sure ouputs are not negative (robot can not reverse yet)
-            left2 = left2 if left2 >= 0 else 0
-            right2 = right2 if right2 >=0 else 0
+            #Output motor
+            
             output.left_motor = output_left
             output.right_motor = output_right
             print('GoToGoal outputs:', output.left_motor, output.right_motor)
+            
+            u_x = self.goal[0] - input.x
+            u_y = self.goal[1] - input.y
+            
+            # Angle from robot to goal
+            pi = 22/7
+            theta_g = math.atan2(u_y, u_x)*(180/pi)
+            
+            print(theta_g - input.theta)
+            
+            if (abs(theta_g - input.theta)<10):
+                next_state = ShootingSt.name
+                
+        # NORMAL RUNNING STATE
         else:
+                # Estimate the motor outpus with fixed speed of 50
+            left,right = speedEstimator.uni_to_diff(25, w, input.radius,input.radius,input.L)
+            
+            # Apply rate limits to the speed and make sure it is between 0 and 1
+            print('Motor commands from PID: left, right', left, right)
+
+            if left > right:
+                left2 = left/left
+                right2 = right/left
+            else:
+                left2 = left/right
+                right2 = right/right
+            
+            print('left 2, right 2', left2, right2)
+            
             left3 = self.rateLimit(left2, self.leftPrevCmd, 0.2, -0.2)
             right3 = self.rateLimit(right2, self.rightPrevCmd, 0.2, -0.2)
             left3 = left3 if left3 >=0.1 else 0.1
@@ -130,8 +158,8 @@ class GoToGoalSt(State):
             self.leftPrevCmd = left3
             self.rightPrevCmd = right3
             print("left3, right 3", left3, right3)
-            output_left = left3*30
-            output_right = right3*30
+            output_left = left3*33
+            output_right = right3*33
             
             # Make sure ouputs are not negative (robot can not reverse yet)
             left2 = left2 if left2 >= 0 else 0
@@ -139,13 +167,11 @@ class GoToGoalSt(State):
             output.left_motor = output_left
             output.right_motor = output_right
             print('GoToGoal outputs:', output.left_motor, output.right_motor)
-        
-        # Check if it is in the goal. If yes, change state
-        if (abs(input.x - self.goal[0]) < 3 and
-            abs(input.y - self.goal[1]) < 3):
-            next_state = AtTheGoalSt.name
             
-    
+            # Check if it is in the goal. If yes, change state
+            if (abs(input.x - self.goal[0]) < 6 and
+                abs(input.y - self.goal[1]) < 6):
+                next_state = AtTheGoalSt.name
         
         return next_state
     
@@ -167,6 +193,27 @@ class AtTheGoalSt(State):
         output.right_motor = 0
         
         return  next_state
+    
+class ShootingSt(State):
+    '''
+        Shooting state
+    '''
+    name = "ShootingSt"
+    
+    def entry(self, input, output):
+        print("Shooting state")
+        output.left_motor = 0
+        output.right_motor = 0
+    
+    def run(self, input, output):
+        next_state = GoToGoalSt.name
+        
+        output.left_motor = 500
+        output.right_motor = 500
+        time.sleep(10)
+        
+        
+        return  next_state
 
         
     
@@ -178,7 +225,8 @@ class stateControl():
         self.states = {
         InitSt.name: InitSt(),
         GoToGoalSt.name: GoToGoalSt(),
-        AtTheGoalSt.name: AtTheGoalSt()}
+        AtTheGoalSt.name: AtTheGoalSt(),
+        ShootingSt.name: ShootingSt()}
         
         self.input = Inputs()
         self.output = Outputs()

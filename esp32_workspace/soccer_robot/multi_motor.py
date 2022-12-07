@@ -10,10 +10,11 @@ p1 = PID(m1, 2.5, 0, 10, 250) #Kp,Kd,Ki,250RPM max speed of the motor.
 p2 = PID(m2, 2.5, 0, 10, 250)
 try:
     while(1):
-        p1.setSpeed_L(30)
-        p2.setSpeed_R(30)
+        #p1.setSpeed_L(30)
+        #p2.setSpeed_R(30)
         print("L/R: ", round(p1.vFilt_L,2), round(p2.vFilt_R,2))
-        #m2.speed(0)
+        m2.speed(200)
+        m1.speed(200)
     
 except KeyboardInterrupt:
     # Press Ctrl+C to exit the application

@@ -25,7 +25,9 @@ def angle_calculate(pt1,pt2, trigger = 0):  # function which returns angle betwe
         angle = angle_list_2[angle]
     else:
         angle = angle_list_1[angle]
-    return angle_float
+    
+    angle = "%.2f" % angle
+    return angle
 
 def detect_Aruco(img):  #returns the detected aruco list dictionary with id: corners
     aruco_list = {}
@@ -65,16 +67,16 @@ def mark_Aruco(img, aruco_list,origin,ratio_ppc):    #function to mark the centr
         orient_centre = tuple((dict_entry[0]+dict_entry[1])/2)
         centre_calibrate = (round((centre[0]-origin[0])/ratio_ppc,2),round((origin[1]-centre[1])/ratio_ppc,2))
         if key == 0:
-            cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
-            cv2.putText(img,'Messi',(int(centre[0]+30), int(centre[1])-40),font, 1, (0,0,255), 2, cv2.LINE_AA)
-            cv2.line(img,(int(centre[0]),int(centre[1])),(int(orient_centre[0]),int(orient_centre[1])),(255,0,0),4)
-            cv2.putText(img, 'id:'+str(key)+'Messi', (10,450), font, 1, (255,128,0), 2, cv2.LINE_AA)
-            cv2.circle(img,(int(centre[0]),int(centre[1])),1,(0,0,255),8)
-        elif key ==1:
-            cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (200,100,200), 2, cv2.LINE_AA)# displaying the idno
-            cv2.putText(img,'Enemy',(int(centre[0]+30), int(centre[1])-40),font, 1, (200,100,200), 2, cv2.LINE_AA)
-            cv2.putText(img, 'id:'+str(key)+'Enemy', (10,480), font, 1, (255,128,0), 2, cv2.LINE_AA)
+            cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (255,128,0), 2, cv2.LINE_AA)# displaying the idno
+            cv2.putText(img,'Messi',(int(centre[0]+30), int(centre[1])-40),font, 1, (255,128,0), 2, cv2.LINE_AA)
+            cv2.line(img,(int(centre[0]),int(centre[1])),(int(orient_centre[0]),int(orient_centre[1])),(255,128,0),4)
+            cv2.putText(img, 'id'+str(key)+':Messi', (10,450), font, 1, (255,128,0), 2, cv2.LINE_AA)
             cv2.circle(img,(int(centre[0]),int(centre[1])),1,(255,128,0),8)
+        elif key ==1:
+            cv2.putText(img,'('+str(centre_calibrate[0])+','+str(centre_calibrate[1])+')', (int(centre[0]+30), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)# displaying the idno
+            cv2.putText(img,'Enemy',(int(centre[0]+30), int(centre[1])-40),font, 1, (0,0,255), 2, cv2.LINE_AA)
+            cv2.putText(img, 'id'+str(key)+':Enemy', (10,500), font, 1, (0,0,255), 2, cv2.LINE_AA)
+            cv2.circle(img,(int(centre[0]),int(centre[1])),1,(0,0,255),8)
     return img
 
 
@@ -117,8 +119,9 @@ def calculate_Robot_State(img,aruco_list,origin,ratio_ppc):  #gives the state of
         centre = tuple(centre)
         #print centre
         angle = angle_calculate(pt1, pt2)
+        angle_show = int(float(angle))
         if key == 0:
-            cv2.putText(img, str(angle), (int(centre[0] - 80), int(centre[1])), font, 1, (0,0,255), 2, cv2.LINE_AA)
+            cv2.putText(img, str(angle_show), (int(centre[0] - 80), int(centre[1])), font, 1, (255,128,0), 2, cv2.LINE_AA)
         x_robot = (centre[0]-origin[0])/ratio_ppc
         y_robot = (origin[1]-centre[1])/ratio_ppc
         x_robot = "%.2f" % x_robot

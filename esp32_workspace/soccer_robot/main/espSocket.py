@@ -9,7 +9,7 @@ except:
   import socket
 
 def do_connect():
-    with open("/wifi_settings.json") as credentials_json:
+    with open("wifi_settings.json") as credentials_json:
         settings = json.loads(credentials_json.read())
     headers = {"Content-Type":"application/json"}
     wlan.active(True)
