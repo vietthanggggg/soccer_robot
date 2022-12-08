@@ -183,7 +183,6 @@ class AStarPlanner:
         return True
 
     def calc_obstacle_map(self, ox, oy):
-
         self.min_x = round(min(ox))
         self.min_y = round(min(oy))
         self.max_x = round(max(ox))
@@ -248,6 +247,7 @@ def main():
     ball_coordinate = [parameter['ball_x'],parameter['ball_y']]
     robot_state = [parameter['robot_x'],parameter['robot_y'],parameter['robot_theta']]
     e_robot_state = [parameter['enemy_x'],parameter['enemy_y'],parameter['enemy_theta']]
+
     middle_goal_x = 90
     middle_goal_y = 0
     
@@ -313,9 +313,10 @@ def main():
         oy.append(i)
 
     if show_animation:  # pragma: no cover
+        plt.title('A Star Algorithm')
         plt.plot(ox, oy, ".k")
-        plt.plot(first_g[0], first_g[1], "ob")
-        plt.plot(sx, sy, "og")
+        plt.plot(sx, sy, "s",label="Messi - Soccer Robot")
+        plt.plot(first_g[0], first_g[1], "ob", label="point to shoot")
         plt.plot(gx, gy, "xb")
         plt.grid(True)
         plt.axis("equal")
@@ -372,15 +373,19 @@ def main():
     #     #json.dump(dictionary, outfile)
     #     outfile.write(json_object)
 
+    rx.reverse()
+    ry.reverse()
+    rx.append(sx)
+    ry.append(sy)
     
-
     if show_animation:  # pragma: no cover
-        plt.plot(x_axis,linear(gx,x_linear,y_linear) )
-        plt.plot( x_linear[0], y_linear[0], 'go' )
-        plt.plot( x_linear[1], y_linear[1], 'go' )
-        plt.plot(rx, ry, "-r")
         
-        
+        plt.plot( x_linear[0], y_linear[0], 'yo' )
+        plt.plot( x_linear[1], y_linear[1], 'go', label="ball")
+        plt.plot(x_axis, linear(gx-10,x_linear,y_linear),"-g", label="path to middle goal")
+        plt.plot(rx, ry, "-r", label="path to a ball")
+        plt.legend(loc="upper left")
+        #plt.legend(["fence", "point_to_take_a_run","robot_coordinate"],loc="upper left")
         plt.pause(0.001)
         
         plt.show()
