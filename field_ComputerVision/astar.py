@@ -314,9 +314,9 @@ def main():
 
     if show_animation:  # pragma: no cover
         plt.title('A Star Algorithm')
-        plt.plot(ox, oy, ".k")
         plt.plot(sx, sy, "s",label="Messi - Soccer Robot")
         plt.plot(first_g[0], first_g[1], "ob", label="point to shoot")
+        plt.plot(ox, oy, ".k",label= "fence")
         plt.plot(gx, gy, "xb")
         plt.grid(True)
         plt.axis("equal")

@@ -111,8 +111,8 @@ class GoToGoalSt(State):
             self.leftPrevCmd = left3
             self.rightPrevCmd = right3
             print("left3, right 3", left3, right3)
-            output_left = left3*25
-            output_right = right3*25
+            output_left = left3*22
+            output_right = right3*22
             
             #Output motor
             
@@ -126,6 +126,10 @@ class GoToGoalSt(State):
             # Angle from robot to goal
             pi = 22/7
             theta_g = math.atan2(u_y, u_x)*(180/pi)
+            if(theta_g<0):
+                theta_g = 360 +theta_g
+            if(input.theta>180):
+                input.theta = 360 - input.theta
             
             print(theta_g - input.theta)
             
@@ -153,7 +157,6 @@ class GoToGoalSt(State):
             right3 = self.rateLimit(right2, self.rightPrevCmd, 0.2, -0.2)
             left3 = left3 if left3 >=0.1 else 0.1
             right3 = right3 if right3 >= 0.1 else 0.1
-            
             
             self.leftPrevCmd = left3
             self.rightPrevCmd = right3
@@ -208,15 +211,12 @@ class ShootingSt(State):
     def run(self, input, output):
         next_state = GoToGoalSt.name
         
-        output.left_motor = 500
-        output.right_motor = 500
-        time.sleep(10)
-        
-        
+        output.left_motor = 400
+        output.right_motor = 400
+        time.sleep(2)
+      
         return  next_state
-
-        
-    
+  
 class stateControl():
     '''
         Main class to constrol the state
