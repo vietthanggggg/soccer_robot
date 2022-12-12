@@ -3,6 +3,7 @@ import json
 import os
 import time
 
+
 file = os.path.abspath("D:/BK-DOCS/Luan Van/field_ComputerVision/data.json")
 
 HOST = "172.20.10.2"  # The server's hostname or IP address
@@ -33,13 +34,13 @@ while(1):
     points = points.encode()
 
     s.sendall(robot_x)
-    time.sleep(1)
+    time.sleep(0.25)
     s.sendall(robot_y)
-    time.sleep(1)
+    time.sleep(0.25)
     s.sendall(robot_theta)
-    time.sleep(1)
+    time.sleep(0.25)
     s.sendall(points)
-    time.sleep(1)
+    time.sleep(0.25)
     print('SENDED!') 
     f.close()
 

@@ -14,8 +14,8 @@ try:
     while(1):
         m1.speed(30)
         m2.speed(30)
-    #p1.setSpeed_R(50)
-    #p2.setSpeed_L(50)
+        #p1.setSpeed_R(50)
+        #p2.setSpeed_L(50)
     
         #print("L/R: ", round(p2.vFilt_L,2), round(p1.vFilt_R,2))
     

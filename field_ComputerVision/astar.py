@@ -264,8 +264,8 @@ def main():
     robot_radius = 5*math.sqrt(2) # [cm]
     
     #CONFIG DISTANCE OF SHOOTING BALL
-    x_axis = np.linspace(gx-10,90,10) # -10 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-10,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-12,90,10) # -10 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-12,x_linear,y_linear)[0],1))
 
     
     # enemy's robot
@@ -382,7 +382,7 @@ def main():
         
         plt.plot( x_linear[0], y_linear[0], 'yo' )
         plt.plot( x_linear[1], y_linear[1], 'go', label="ball")
-        plt.plot(x_axis, linear(gx-10,x_linear,y_linear),"-g", label="path to middle goal")
+        plt.plot(x_axis, linear(gx-12,x_linear,y_linear),"-g", label="path to middle goal")
         plt.plot(rx, ry, "-r", label="path to a ball")
         plt.legend(loc="upper left")
         #plt.legend(["fence", "point_to_take_a_run","robot_coordinate"],loc="upper left")
