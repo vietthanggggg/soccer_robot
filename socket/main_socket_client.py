@@ -13,37 +13,46 @@ PORT = 70  # The port used by the server
 #data = json.load(f)
 s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
-while(1):
-    f=open(file)
-    data = json.load(f)
-    robot_x = data["robot_x"]
-    robot_x = str(robot_x)
-    robot_x = robot_x.encode()
+f=open(file)
+data = json.load(f)
+points = data["move_point_list"]
+print(points)
+points = str(points)
+points = points.encode()
+s.sendall(points)
+time.sleep(1.5)
+data = s.recv(1024)
+print('SENDED!') 
+f.close()
+try:
+    while(1):
+        f=open(file)
+        data = json.load(f)
+        robot_x = data["robot_x"]
+        robot_x = str(robot_x)
+        robot_x = robot_x.encode()
 
-    robot_y = data["robot_y"]
-    robot_y = str(robot_y)
-    robot_y = robot_y.encode()
+        robot_y = data["robot_y"]
+        robot_y = str(robot_y)
+        robot_y = robot_y.encode()
 
-    robot_theta = data["robot_theta"]
-    robot_theta = str(robot_theta)
-    robot_theta = robot_theta.encode()
+        robot_theta = data["robot_theta"]
+        robot_theta = str(robot_theta)
+        robot_theta = robot_theta.encode()
 
-    points = data["move_point_list"]
-    print(points)
-    points = str(points)
-    points = points.encode()
-
-    s.sendall(robot_x)
-    time.sleep(0.25)
-    s.sendall(robot_y)
-    time.sleep(0.25)
-    s.sendall(robot_theta)
-    time.sleep(0.25)
-    s.sendall(points)
-    time.sleep(0.25)
-    print('SENDED!') 
-    f.close()
-
+        s.sendall(robot_x)
+        time.sleep(0.1)
+        s.recv(2)
+        s.sendall(robot_y)
+        time.sleep(0.1)
+        s.recv(2)
+        s.sendall(robot_theta)
+        time.sleep(0.1)
+        s.recv(2)
+        print('SENDED!')
+except KeyboardInterrupt:
+    # Press Ctrl+C to exit the application
+    pass
 #print('SENDED!') 
 
 #s.sendall("G".encode())

@@ -28,6 +28,8 @@ y=0
 theta=0
 array_of_goals=0
 
+array_of_goals = odo.getGoals()
+
 try:
     start_time = time.time_ns()
     while True:
@@ -37,7 +39,7 @@ try:
         start_time = t
 
         odo.step()
-        x, y , theta, array_of_goals = odo.getPose()
+        x, y , theta = odo.getPose()
         #print(x,y,theta)
         # Set inputs for the state machine
         

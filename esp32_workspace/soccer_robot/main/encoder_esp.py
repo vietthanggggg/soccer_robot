@@ -189,9 +189,3 @@ class PID:
         v_R=self.vFilt_R
         # Constant delay
         sleep_ms(100)
-        
-
-
-
-    
-
