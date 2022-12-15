@@ -242,7 +242,7 @@ def main():
 
     with open(file, "r+") as openfile:
         parameter = json.load(openfile)
-    
+
     # Input point
     ball_coordinate = [parameter['ball_x'],parameter['ball_y']]
     robot_state = [parameter['robot_x'],parameter['robot_y'],parameter['robot_theta']]
@@ -260,12 +260,12 @@ def main():
     gx = ball_coordinate[0] # [cm]
     gy = ball_coordinate[1]  # [cm]
     
-    grid_size = 10.0  # [cm]
+    grid_size = 10  # [cm]
     robot_radius = 5*math.sqrt(2) # [cm]
     
     #CONFIG DISTANCE OF SHOOTING BALL
-    x_axis = np.linspace(gx-7,90,10) # -10 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-7,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-10,90,10) # -10 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-10,x_linear,y_linear)[0],1))
 
     
     # enemy's robot
@@ -299,19 +299,30 @@ def main():
     for i in range(-20, 20):
         ox.append(100)
         oy.append(i)
-    for i in range(e_x-6, e_x+6):
+    for i in range(e_x-5, e_x+5):
         ox.append(i)
-        oy.append(e_y-6)
-    for i in range(e_x-6, e_x+6):
+        oy.append(e_y-5)
+    for i in range(e_x-5, e_x+5):
         ox.append(i)
-        oy.append(e_y+6)
-    for i in range(e_y-6, e_y+6):
-        ox.append(e_x-6)
+        oy.append(e_y+5)
+    for i in range(e_y-5, e_y+5):
+        ox.append(e_x-5)
         oy.append(i)
-    for i in range(e_y-6, e_y+6):
-        ox.append(e_x+6)
+    for i in range(e_y-5, e_y+5):
+        ox.append(e_x+5)
         oy.append(i)
-
+    for i in range(int(gx)-2, int(gx)+2):
+        ox.append(i)
+        oy.append(int(gy)-2)
+    for i in range(int(gx)-2, int(gx)+2):
+        ox.append(i)
+        oy.append(int(gy)+2)
+    for i in range(int(gy)-2, int(gy)+2):
+        oy.append(i)
+        ox.append(int(gx)+2)
+    for i in range(int(gy)-2, int(gy)+2):
+        oy.append(i)
+        ox.append(int(gx)-2)
     if show_animation:  # pragma: no cover
         plt.title('A Star Algorithm')
         plt.plot(sx, sy, "s",label="Messi - Soccer Robot")
@@ -382,7 +393,7 @@ def main():
         
         plt.plot( x_linear[0], y_linear[0], 'yo' )
         plt.plot( x_linear[1], y_linear[1], 'go', label="ball")
-        plt.plot(x_axis, linear(gx-7,x_linear,y_linear),"-g", label="path to middle goal")
+        plt.plot(x_axis, linear(gx-10,x_linear,y_linear),"-g", label="path to middle goal")
         plt.plot(rx, ry, "-r", label="path to a ball")
         plt.legend(loc="upper left")
         #plt.legend(["fence", "point_to_take_a_run","robot_coordinate"],loc="upper left")

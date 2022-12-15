@@ -55,7 +55,6 @@ try:
         
         #print(stControl.output.left_motor)
         
-        
         m1.speed(int(stControl.output.right_motor))
         m2.speed(int(stControl.output.left_motor)) 
        

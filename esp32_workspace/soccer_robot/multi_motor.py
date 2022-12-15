@@ -11,17 +11,13 @@ p2 = PID(m2, 2.5, 0, 10, 250)
 m1.speed(0)
 m2.speed(0)  
 
-p1.setTarget(10)
-p2.setTarget(10)
+#p1.setTarget(10)
+#p2.setTarget(10)
 
 try:
     while(1):
-        v1=input()
-        v2=input()
-        
-        p1.setTarget(int(v1))
-        p2.setTarget(int(v2))
-        
+        m2.speed(50)
+        #m1.speed(50)
         #p1.setSpeed_L(int(v1))
         #p2.setSpeed_R(int(v2))
         

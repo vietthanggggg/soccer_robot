@@ -21,7 +21,7 @@ class GoToGoal:
         # Distance between goal and robot in y direction
         u_y = y_g - y
         
-        if (abs(u_x) < 5 and abs(u_y < 5)):
+        if (abs(u_x) < 2.5 and abs(u_y < 2.5)):
             print("GOoooOOOOOlLLL", x, y)
             return 0
         
