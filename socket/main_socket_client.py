@@ -6,7 +6,7 @@ import time
 
 file = os.path.abspath("D:/BK-DOCS/Luan Van/field_ComputerVision/data.json")
 
-HOST = "172.20.10.2"  # The server's hostname or IP address
+HOST = "172.20.10.3"  # The server's hostname or IP address
 PORT = 70  # The port used by the server
 
 
@@ -53,6 +53,7 @@ try:
         s.recv(2)
         #time.sleep(0.01)
         print('SENDED!')
+        f.close()
 except KeyboardInterrupt:
     # Press Ctrl+C to exit the application
     pass

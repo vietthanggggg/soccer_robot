@@ -40,9 +40,7 @@ try:
 
         odo.step()
         x, y , theta = odo.getPose()
-        #print(x,y,theta)
         # Set inputs for the state machine
-        
         stControl.input.x = x
         stControl.input.y = y
         stControl.input.theta = theta
@@ -51,9 +49,6 @@ try:
         stControl.input.L = wheel_base
         stControl.input.radius = wheel_radius
         stControl.step()
-        
-        
-        #print(stControl.output.left_motor)
         
         m1.speed(int(stControl.output.right_motor))
         m2.speed(int(stControl.output.left_motor)) 

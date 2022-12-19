@@ -112,8 +112,8 @@ while True:
         #robot_state_parameter = (robot_state_coordinate[0],robot_state_coordinate[1],robot_state_angle)    #Robot coordinates (x,y,angle)
     
     hsv= cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    lower_orange= np.array([26,25,216])                 #BK
-    upper_orange= np.array([32,125,255])                 #BK
+    lower_orange= np.array([28,20,149])                 #BK
+    upper_orange= np.array([44,100,230])                 #BK
     # lower_orange= np.array([20,36,103])                 #KTX
     # upper_orange= np.array([35,255,255])                 #KTX
     mask=cv2.inRange(hsv,lower_orange,upper_orange)
@@ -180,13 +180,13 @@ while True:
                 except KeyError|TypeError:
                     robot_state=0
                     print('Can not recognize Messi')
-                try:
-                    j['enemy_x'] = float(robot_state[1][0])
-                    j['enemy_y'] = float(robot_state[1][1])
-                    j['enemy_theta'] = float(robot_state[1][2])
-                except KeyError|TypeError:
-                    print('Can not recognize enemy')
-                    robot_state=0
+                # try:
+                #     j['enemy_x'] = float(robot_state[1][0])
+                #     j['enemy_y'] = float(robot_state[1][1])
+                #     j['enemy_theta'] = float(robot_state[1][2])
+                # except KeyError|TypeError:
+                #     print('Can not recognize enemy')
+                #     robot_state=0
                 #j['det_aruco_list'] = robot_state
                 outfile.seek(0)
                 json.dump(j,outfile)

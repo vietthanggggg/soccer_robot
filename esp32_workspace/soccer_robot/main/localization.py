@@ -7,7 +7,7 @@ except:
 import ujson as json
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(("172.20.10.2", 70))
+s.bind(("172.20.10.3", 70))
 s.listen(5)
 conn, addr = s.accept()
 print('Got a connection from %s' % str(addr))

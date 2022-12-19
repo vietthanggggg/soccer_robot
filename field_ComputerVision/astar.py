@@ -246,7 +246,7 @@ def main():
     # Input point
     ball_coordinate = [parameter['ball_x'],parameter['ball_y']]
     robot_state = [parameter['robot_x'],parameter['robot_y'],parameter['robot_theta']]
-    e_robot_state = [parameter['enemy_x'],parameter['enemy_y'],parameter['enemy_theta']]
+    # e_robot_state = [parameter['enemy_x'],parameter['enemy_y'],parameter['enemy_theta']]
 
     middle_goal_x = 90
     middle_goal_y = 0
@@ -260,34 +260,34 @@ def main():
     gx = ball_coordinate[0] # [cm]
     gy = ball_coordinate[1]  # [cm]
     
-    grid_size = 10  # [cm]
-    robot_radius = 5*math.sqrt(2) # [cm]
+    grid_size = 5 # [cm]
+    robot_radius = 5.5*math.sqrt(2) # [cm]
     
     #CONFIG DISTANCE OF SHOOTING BALL
-    x_axis = np.linspace(gx-10,90,10) # -10 for take a run to kick a ball
-    first_g = (x_axis[0],round(linear(gx-10,x_linear,y_linear)[0],1))
+    x_axis = np.linspace(gx-13,90,10) # -10 for take a run to kick a ball
+    first_g = (x_axis[0],round(linear(gx-13,x_linear,y_linear)[0],1))
 
     
     # enemy's robot
-    e_x = int(e_robot_state[0])
-    e_y = int(e_robot_state[1])
-    e_theta = e_robot_state[2]
+    # e_x = int(e_robot_state[0])
+    # e_y = int(e_robot_state[1])
+    # e_theta = e_robot_state[2]
 
     # set obstacle positions
     ox, oy = [], []
-    for i in range(-38, 38):
+    for i in range(-40, 38):
         ox.append(0)
         oy.append(i)
     for i in range(0, 90):
         ox.append(i)
-        oy.append(-38)
+        oy.append(-40)
     for i in range(0, 90):
         ox.append(i)
-        oy.append(38)
-    for i in range(20, 38):
+        oy.append(40)
+    for i in range(20, 40):
         ox.append(90)
         oy.append(i)
-    for i in range(-38, -20):
+    for i in range(-40, -20):
         ox.append(90)
         oy.append(i)
     for i in range(90, 100):
@@ -299,30 +299,31 @@ def main():
     for i in range(-20, 20):
         ox.append(100)
         oy.append(i)
-    for i in range(e_x-5, e_x+5):
+    # for i in range(e_x-5, e_x+5):
+    #     ox.append(i)
+    #     oy.append(e_y-5)
+    # for i in range(e_x-5, e_x+5):
+    #     ox.append(i)
+    #     oy.append(e_y+5)
+    # for i in range(e_y-5, e_y+5):
+    #     ox.append(e_x-5)
+    #     oy.append(i)
+    # for i in range(e_y-5, e_y+5):
+    #     ox.append(e_x+5)
+    #     oy.append(i)
+    for i in np.arange(float(gx)-2.8, float(gx)+2.8):
         ox.append(i)
-        oy.append(e_y-5)
-    for i in range(e_x-5, e_x+5):
+        oy.append(float(gy)-2.8)
+    for i in np.arange(float(gx)-2.8, float(gx)+2.8):
         ox.append(i)
-        oy.append(e_y+5)
-    for i in range(e_y-5, e_y+5):
-        ox.append(e_x-5)
+        oy.append(float(gy)+2.8)
+    for i in np.arange(float(gy)-2.8, float(gy)+2.8):
         oy.append(i)
-    for i in range(e_y-5, e_y+5):
-        ox.append(e_x+5)
+        ox.append(float(gx)+2.8)
+    for i in np.arange(float(gy)-2.8, float(gy)+2.8):
         oy.append(i)
-    for i in range(int(gx)-2, int(gx)+2):
-        ox.append(i)
-        oy.append(int(gy)-2)
-    for i in range(int(gx)-2, int(gx)+2):
-        ox.append(i)
-        oy.append(int(gy)+2)
-    for i in range(int(gy)-2, int(gy)+2):
-        oy.append(i)
-        ox.append(int(gx)+2)
-    for i in range(int(gy)-2, int(gy)+2):
-        oy.append(i)
-        ox.append(int(gx)-2)
+        ox.append(float(gx)-2.8)
+
     if show_animation:  # pragma: no cover
         plt.title('A Star Algorithm')
         plt.plot(sx, sy, "s",label="Messi - Soccer Robot")
@@ -338,12 +339,14 @@ def main():
     
     a_star = AStarPlanner(ox, oy, grid_size, robot_radius)
     rx, ry = a_star.planning(sx, sy,first_g[0], first_g[1])
-    
+    lx = len(rx)
+    ly = len(ry)
+
     rx.reverse()
     ry.reverse()
     
-    rx.remove(rx[len(rx)-1])
-    ry.remove(ry[len(ry)-1])
+    #rx.remove(rx[lx-1])
+    #ry.remove(ry[ly-1])
 
     rx.append(first_g[0])
     ry.append(first_g[1])
@@ -393,7 +396,7 @@ def main():
         
         plt.plot( x_linear[0], y_linear[0], 'yo' )
         plt.plot( x_linear[1], y_linear[1], 'go', label="ball")
-        plt.plot(x_axis, linear(gx-10,x_linear,y_linear),"-g", label="path to middle goal")
+        plt.plot(x_axis, linear(gx-13,x_linear,y_linear),"-g", label="path to middle goal")
         plt.plot(rx, ry, "-r", label="path to a ball")
         plt.legend(loc="upper left")
         #plt.legend(["fence", "point_to_take_a_run","robot_coordinate"],loc="upper left")

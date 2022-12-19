@@ -16,7 +16,9 @@ class Motor:
             self.pos = self.pos+1
         else:
             self.pos = self.pos-1
-        #print(self.pos)
+            
+    
+        
     
     # Constroctor for initializing the motor pins
     def __init__(self,m1, m2, en, c1, c2, freq=50):
@@ -52,7 +54,7 @@ class PID:
     posPrev = 0
 
     # Constructor for initializing PID values
-    def __init__(self, M, kp=1, kd=0, ki=0, umaxIn=500, eprev=0, eintegral=0):
+    def __init__(self, M, kp=2.5, kd=0, ki=10, umaxIn=500, eprev=0, eintegral=0):
         self.kp = kp
         self.kd = kd
         self.ki = ki
@@ -60,10 +62,9 @@ class PID:
         self.umaxIn  =umaxIn
         self.eprev = eprev
         self.eintegral = eintegral
-        self.vFilt_L=0
-        self.vPrev_L=0
-        self.vFilt_R=0
-        self.vPrev_R=0
+        self.vFilt=0
+        self.vPrev=0
+        
 
     # Function for calculating the Feedback signal. It takes the current value, user target value and the time delta.
     def evalu(self,value, target, deltaT):
@@ -92,6 +93,8 @@ class PID:
             else:
                 u = u 
         self.eprev = e
+        
+        
         return u
     
     # Function for closed loop position control
@@ -120,7 +123,7 @@ class PID:
         sleep_ms(10)
         
     # Function for closed loop speed control
-    def setSpeed_L(self, target):
+    def setSpeed(self, target):
         state = disable_irq()
         posi = self.M.pos
         enable_irq(state)
@@ -142,29 +145,30 @@ class PID:
         #v = velocity*60/374
         v = velocity*60/(400/2)
         
-        self.vFilt_L = 0.854*self.vFilt_L + 0.0728*v + 0.0728*self.vPrev_L
-        self.vPrev_L = v
+        self.vFilt = 0.854*self.vFilt + 0.0728*v + 0.0728*self.vPrev
+        self.vPrev = v
         
         # Call for control signal
-        x = int(self.evalu(self.vFilt_L, vt, deltaT))
+        x = int(self.evalu(self.vFilt, vt, deltaT))
 
         # Set the motor speed
         self.M.speed(x)
-        #print(self.vFilt_L, vt)   # For debugging
-        v_L=self.vFilt_L
+        print(self.vFilt, vt)   # For debugging
+        v=self.vFilt
         # Constant delay
         sleep_ms(100)
         
-    def setSpeed_R(self, target):
+
+        
+        
+    def calrpm(self):
         state = disable_irq()
         posi = self.M.pos
         enable_irq(state)
 
         # Delta is high because small delta causes drastic speed stepping.
         deltaT = .1
-
-        # Target RPM
-        vt = target 
+ 
 
         # Current encoder tick rate
         velocity = (posi - self.posPrev)/deltaT
@@ -175,17 +179,9 @@ class PID:
         # For different gearing differnt values
         # Run the function without setting the motor speed and calculate the ticks per revolution by manually rotaing the motor  
         #v = velocity*60/374
-        v = velocity*60/(400/2)
+        v = velocity*60/(374/2)
+        print(v)
         
-        self.vFilt_R = 0.854*self.vFilt_R + 0.0728*v + 0.0728*self.vPrev_R
-        self.vPrev_R = v
-        
-        # Call for control signal
-        x = int(self.evalu(self.vFilt_R, vt, deltaT))
-        print(x)
         # Set the motor speed
-        self.M.speed(x)
-        #print(self.vFilt_R, vt)   # For debugging
-        v_R=self.vFilt_R
-        # Constant delay
+        #self.M.speed(M)
         sleep_ms(100)

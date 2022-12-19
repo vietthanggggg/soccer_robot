@@ -117,15 +117,15 @@ class GoToGoalSt(State):
                     left2 = left/left
                     right2 = right/left
                 except ZeroDivisionError:
-                    left2 = 0
-                    right2 = 0
+                    left2 = -1.5
+                    right2 = -1.5
             else:
                 try:
                     left2 = left/right
                     right2 = right/right
                 except ZeroDivisionError:
-                    left2 = 0
-                    right2 = 0
+                    left2 = -1.5
+                    right2 = -1.5
             
             print('left 2, right 2', left2, right2)
             
@@ -144,13 +144,17 @@ class GoToGoalSt(State):
             output.right_motor = output_right
             print('GoToGoal outputs:', output.left_motor, output.right_motor)
             
-            if (abs(e_k) < 1):
+            if (self.goal[1] > 10 and e_k > -10 and e_k < -5):
                 next_state = ShootingSt.name
-                
+            
+            elif (self.goal[1] < -10 and e_k > 5 and e_k < 10):
+                next_state = ShootingSt.name
+            elif(self.goal[1] >= -10 and self.goal[1] <= 10 and abs(e_k) < 2):
+                next_state = ShootingSt.name
         # NORMAL RUNNING STATE
         else:
             # ROTATE ROBOT WITH ABS(THETA)<45 DEGREE
-            if(abs(e_k) > 25):
+            if(abs(e_k) > 20):
                 left,right = speedEstimator.uni_to_diff(0, w, input.radius,input.radius,input.L)
             
                 # Apply rate limits to the speed and make sure it is between 0 and 1
@@ -161,15 +165,16 @@ class GoToGoalSt(State):
                         left2 = left/left
                         right2 = right/left
                     except ZeroDivisionError:
-                        left2 = 0
-                        right2 = 0
+                        left2 = 1
+                        right2 = -1
+                        
                 else:
                     try:
                         left2 = left/right
                         right2 = right/right
                     except ZeroDivisionError:
-                        left2 = 0
-                        right2 = 0
+                        left2 = -1
+                        right2 = 1    
                 
                 print('left 2, right 2', left2, right2)
                 
@@ -189,12 +194,12 @@ class GoToGoalSt(State):
                 print('GoToGoal outputs:', output.left_motor, output.right_motor)
                 
                  # Check if it is in the goal. If yes, change state
-                if (abs(input.x - self.goal[0]) < 2.5 and
-                    abs(input.y - self.goal[1]) < 2.5):
+                if (abs(input.x - self.goal[0]) < 2 and
+                    abs(input.y - self.goal[1]) < 2):
                     next_state = AtTheGoalSt.name
             else:
             # Estimate the motor outpus with fixed speed of 50
-                left,right = speedEstimator.uni_to_diff(70, w, input.radius,input.radius,input.L)
+                left,right = speedEstimator.uni_to_diff(48, w, input.radius,input.radius,input.L)
                 
                 # Apply rate limits to the speed and make sure it is between 0 and 1
                 print('Motor commands from PID: left, right', left, right)
@@ -204,15 +209,13 @@ class GoToGoalSt(State):
                         left2 = left/left
                         right2 = right/left
                     except ZeroDivisionError:
-                        left2 = 0
-                        right2 = 0
+                        next_state = AtTheGoalSt.name
                 else:
                     try:
                         left2 = left/right
                         right2 = right/right
                     except ZeroDivisionError:
-                        left2 = 0
-                        right2 = 0
+                        next_state = AtTheGoalSt.name
                 
                 print('left 2, right 2', left2, right2)
                 
@@ -225,8 +228,8 @@ class GoToGoalSt(State):
                 self.leftPrevCmd = left3
                 self.rightPrevCmd = right3
                 print("left3, right 3", left3, right3)
-                output_left = left3*75
-                output_right = right3*75
+                output_left = left3*50
+                output_right = right3*50
                 
                 # Make sure ouputs are not negative (robot can not reverse yet)
                 
@@ -238,8 +241,8 @@ class GoToGoalSt(State):
                 print('GoToGoal outputs:', output.left_motor, output.right_motor)
                 
                 # Check if it is in the goal. If yes, change state
-                if (abs(input.x - self.goal[0]) < 2.5 and
-                    abs(input.y - self.goal[1]) < 2.5):
+                if (abs(input.x - self.goal[0]) < 2 and
+                    abs(input.y - self.goal[1]) < 2):
                     next_state = AtTheGoalSt.name
         
         return next_state
@@ -278,12 +281,28 @@ class ShootingSt(State):
     def run(self, input, output):
         next_state = ShootingSt.name
         
-        output.left_motor = 400
-        output.right_motor = 400
+        output.left_motor = 300
+        output.right_motor = 300
         ShootingSt.i=ShootingSt.i+1
         if(ShootingSt.i == 20):
-            next_state = AtTheGoalSt.name
+            next_state = EndSt.name
         return  next_state
+    
+class EndSt(State):
+    '''
+        At the Goal state
+    '''
+    name = "EndSt"
+    
+    def entry(self, input, output):
+        print("Ending!!!")
+        output.left_motor = 0
+        output.right_motor = 0
+    
+    def run(self, input, output):
+        
+        output.left_motor = 0
+        output.right_motor = 0
   
 class stateControl():
     '''
@@ -294,7 +313,8 @@ class stateControl():
         InitSt.name: InitSt(),
         GoToGoalSt.name: GoToGoalSt(),
         AtTheGoalSt.name: AtTheGoalSt(),
-        ShootingSt.name: ShootingSt()}
+        ShootingSt.name: ShootingSt(),
+        EndSt.name: EndSt()}
         
         self.input = Inputs()
         self.output = Outputs()
@@ -304,7 +324,10 @@ class stateControl():
     def step(self):
         next_state = self.states[self.currentState].run(self.input, self.output)
         
+        if (self.currentState == EndSt.name):
+            return 0
         if (next_state != self.currentState):
             self.states[self.currentState].exit(self.input, self.output)
             self.currentState = next_state
             self.states[self.currentState].entry(self.input, self.output)
+            
